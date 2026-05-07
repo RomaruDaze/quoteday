@@ -10,21 +10,21 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val JapandiColorScheme = lightColorScheme(
-    primary = Color(0xFF6B5E52),
-    onPrimary = Color(0xFFFAF8F5),
-    primaryContainer = Color(0xFFEDE8E2),
-    onPrimaryContainer = Color(0xFF1C1A18),
-    secondary = Color(0xFF7A9080),
-    onSecondary = Color(0xFFFAF8F5),
-    background = Color(0xFFF5F0EB),
-    onBackground = Color(0xFF1C1A18),
-    surface = Color(0xFFFAF8F5),
-    onSurface = Color(0xFF1C1A18),
-    onSurfaceVariant = Color(0xFF6B6560),
-    surfaceVariant = Color(0xFFEDE8E2),
+    primary = Color(0xFFB5892A),
+    onPrimary = Color(0xFFFCF8EC),
+    primaryContainer = Color(0xFFEEDFA8),
+    onPrimaryContainer = Color(0xFF1C1910),
+    secondary = Color(0xFF7A6A45),
+    onSecondary = Color(0xFFFCF8EC),
+    background = Color(0xFFF5EDD0),
+    onBackground = Color(0xFF1C1910),
+    surface = Color(0xFFFCF8EC),
+    onSurface = Color(0xFF1C1910),
+    onSurfaceVariant = Color(0xFF6B5E38),
+    surfaceVariant = Color(0xFFEEDFA8),
     error = Color(0xFFC0392B),
     onError = Color.White,
-    outline = Color(0xFFDDD8D2),
+    outline = Color(0xFFE0D4A8),
 )
 
 @Composable
