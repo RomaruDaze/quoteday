@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.quoteday.app.notification.NotificationHelper
 import com.quoteday.app.ui.QuoteScreen
 import com.quoteday.app.ui.QuoteViewModel
