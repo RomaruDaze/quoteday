@@ -187,15 +187,18 @@ private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .padding(start = 0.dp, top = 18.dp, bottom = 18.dp, end = 4.dp),
         ) {
-            Box(
+            Icon(
+                painter = painterResource(R.drawable.ic_quote),
+                contentDescription = null,
+                tint = AccentMustard,
                 modifier = Modifier
-                    .width(3.dp)
-                    .height(32.dp)
+                    .size(20.dp)
                     .align(Alignment.CenterVertically)
-                    .background(AccentMustard)
+                    .padding(start = 0.dp)
+                    .offset(x = 16.dp)
             )
 
-            Spacer(modifier = Modifier.width(18.dp))
+            Spacer(modifier = Modifier.width(28.dp))
 
             Column(
                 modifier = Modifier
