@@ -340,8 +340,8 @@ private fun JapandiAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss
         unfocusedBorderColor = CardBorder,
         focusedLabelColor = AccentMustard,
         unfocusedLabelColor = TextMuted,
-        focusedContainerColor = Background,
-        unfocusedContainerColor = Background,
+        focusedContainerColor = Surface,
+        unfocusedContainerColor = Surface,
     )
 
     Dialog(
@@ -470,8 +470,8 @@ private fun JapandiEditQuoteDialog(
         unfocusedBorderColor = CardBorder,
         focusedLabelColor = AccentMustard,
         unfocusedLabelColor = TextMuted,
-        focusedContainerColor = Background,
-        unfocusedContainerColor = Background,
+        focusedContainerColor = Surface,
+        unfocusedContainerColor = Surface,
     )
 
     Dialog(
