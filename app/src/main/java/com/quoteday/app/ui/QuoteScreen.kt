@@ -64,7 +64,7 @@ fun QuoteScreen(viewModel: QuoteViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background)
+            .background(brush = Background)
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
