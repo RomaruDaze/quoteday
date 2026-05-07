@@ -45,7 +45,7 @@ private val Background    = Brush.verticalGradient(
         Color(0xFFFFDE59),
     ),
     startY = 0f,
-    endY = 2200f
+    endY = 4000f
 )
 private val Surface       = Color(0xFFFFFCF0)
 private val CardBorder    = Color(0xFFE8C830)
