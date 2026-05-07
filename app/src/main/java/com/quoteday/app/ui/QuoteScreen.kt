@@ -134,7 +134,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
 }
 
 @Composable
-private fun JapandiHeader() {
+private fun JapandiHeader(onSettingsClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,7 +144,7 @@ private fun JapandiHeader() {
             modifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp, vertical = 18.dp),
+                .padding(start = 20.dp, end = 8.dp, top = 18.dp, bottom = 18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -153,7 +153,7 @@ private fun JapandiHeader() {
                 modifier = Modifier.size(52.dp)
             )
             Spacer(modifier = Modifier.width(14.dp))
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "QuoteDay",
                     fontSize = 26.sp,
@@ -168,6 +168,14 @@ private fun JapandiHeader() {
                     fontWeight = FontWeight.Normal,
                     color = TextSecondary,
                     letterSpacing = 1.5.sp,
+                )
+            }
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    tint = AccentWarm,
+                    modifier = Modifier.size(22.dp)
                 )
             }
         }
