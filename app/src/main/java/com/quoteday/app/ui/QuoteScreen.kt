@@ -58,7 +58,7 @@ private val Charcoal      = Color(0xFF3A2E18)
 private val DeleteRed     = Color(0xFFC0392B)
 
 @Composable
-fun QuoteScreen(viewModel: QuoteViewModel) {
+fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
     val quotes by viewModel.quotes.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var editingQuote by remember { mutableStateOf<Quote?>(null) }
