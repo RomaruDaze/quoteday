@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+build/
+**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# Android Studio
+*.iml
+.idea/
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+local.properties
+captures/
+
+# Keystore
+*.keystore
+*.jks
+
+# Google Services
+google-services.json
+
+# Kotlin
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
