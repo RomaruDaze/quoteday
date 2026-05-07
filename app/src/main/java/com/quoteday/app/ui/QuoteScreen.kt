@@ -147,11 +147,9 @@ private fun JapandiHeader() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(R.mipmap.ic_launcher_foreground),
+                painter = painterResource(R.drawable.ic_logo),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                modifier = Modifier.size(52.dp)
             )
             Spacer(modifier = Modifier.width(14.dp))
             Column {
