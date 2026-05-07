@@ -214,7 +214,7 @@ private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
                     Text(
                         text = "— ${quote.author}",
                         fontSize = 11.sp,
-                        color = AccentSage,
+                        color = AccentWarm,
                         fontWeight = FontWeight.Medium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
