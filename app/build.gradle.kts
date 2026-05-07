@@ -26,6 +26,18 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = "Latest QuoteDay build"
+                groups = "testers"
+            }
+        }
+        debug {
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = "Debug build"
+                groups = "testers"
+            }
         }
     }
     compileOptions {
