@@ -25,6 +25,12 @@ google-services.json
 # Kotlin
 *.class
 
+# Claude Code
+.claude/
+
 # OS
 .DS_Store
 Thumbs.db
+
+# Stray Gradle JVM dirs
+"java.home":*
