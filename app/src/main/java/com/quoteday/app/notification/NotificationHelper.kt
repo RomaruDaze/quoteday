@@ -27,7 +27,7 @@ object NotificationHelper {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val appIcon = BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setLargeIcon(appIcon)
             .setContentTitle("Quote of the Day")
             .setContentText(quote)
