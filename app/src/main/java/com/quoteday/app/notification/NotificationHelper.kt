@@ -25,8 +25,10 @@ object NotificationHelper {
 
     fun showQuoteNotification(context: Context, quote: String) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val appIcon = BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setLargeIcon(appIcon)
             .setContentTitle("Quote of the Day")
             .setContentText(quote)
             .setStyle(NotificationCompat.BigTextStyle().bigText(quote))
