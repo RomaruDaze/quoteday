@@ -36,7 +36,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.quoteday.app.data.Quote
 
-private val Background    = Color(0xFFFFDE59)
+private val Background    = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFFFFFFFF),
+        Color(0xFFFFF3A0),
+        Color(0xFFFFDE59),
+    ),
+    startY = 0f,
+    endY = 2200f
+)
 private val Surface       = Color(0xFFFFFCF0)
 private val CardBorder    = Color(0xFFE8C830)
 private val AccentMustard = Color(0xFFB5892A)
