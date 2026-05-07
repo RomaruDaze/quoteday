@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
@@ -34,23 +33,16 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.quoteday.app.data.Quote
 
-private val ScreenBackground = Brush.verticalGradient(
-    colors = listOf(
-        Color(0xFFFFFDE7),
-        Color(0xFFFFF9C4),
-        Color(0xFFFFF59D),
-    )
-)
-
-private val CardFill = Color(0xFFFFFEF0)
-private val CardBorder = Color(0xFFFFD600).copy(alpha = 0.50f)
-private val CardShadow = Color(0xFFFFCC00).copy(alpha = 0.20f)
-private val AccentAmber = Color(0xFFFFB300)
-private val AccentAmberDark = Color(0xFFF57F17)
-private val TextPrimary = Color(0xFF1A1208)
-private val TextSecondary = Color(0xFF6D5016)
-private val TextMuted = Color(0xFFAD8B2B)
-private val DeleteRed = Color(0xFFE53935)
+private val Background   = Color(0xFFF5F0EB)
+private val Surface      = Color(0xFFFAF8F5)
+private val CardBorder   = Color(0xFFDDD8D2)
+private val AccentTaupe  = Color(0xFF6B5E52)
+private val AccentSage   = Color(0xFF7A9080)
+private val TextPrimary  = Color(0xFF1C1A18)
+private val TextSecondary = Color(0xFF6B6560)
+private val TextMuted    = Color(0xFFA09890)
+private val Charcoal     = Color(0xFF2C2824)
+private val DeleteRed    = Color(0xFFC0392B)
 
 @Composable
 fun QuoteScreen(viewModel: QuoteViewModel) {
@@ -61,19 +53,19 @@ fun QuoteScreen(viewModel: QuoteViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = ScreenBackground)
+            .background(Background)
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             contentColor = TextPrimary,
-            topBar = { SunnyHeader() },
+            topBar = { JapandiHeader() },
             floatingActionButton = {
-                SunnyFab(onClick = { showDialog = true })
+                JapandiFab(onClick = { showDialog = true })
             }
         ) { padding ->
             if (quotes.isEmpty()) {
-                SunnyEmptyState(
+                JapandiEmptyState(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
@@ -84,15 +76,15 @@ fun QuoteScreen(viewModel: QuoteViewModel) {
                         .fillMaxSize()
                         .padding(padding),
                     contentPadding = PaddingValues(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 96.dp
+                        start = 20.dp,
+                        end = 20.dp,
+                        top = 20.dp,
+                        bottom = 100.dp
                     ),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(quotes, key = { it.id }) { quote ->
-                        SunnyQuoteItem(
+                        JapandiQuoteItem(
                             quote = quote,
                             onClick = { editingQuote = quote }
                         )
@@ -103,7 +95,7 @@ fun QuoteScreen(viewModel: QuoteViewModel) {
     }
 
     if (showDialog) {
-        SunnyAddQuoteDialog(
+        JapandiAddQuoteDialog(
             onConfirm = { text, author ->
                 viewModel.addQuote(text, author)
                 showDialog = false
@@ -113,7 +105,7 @@ fun QuoteScreen(viewModel: QuoteViewModel) {
     }
 
     editingQuote?.let { quote ->
-        SunnyEditQuoteDialog(
+        JapandiEditQuoteDialog(
             quote = quote,
             onSave = { updated ->
                 viewModel.updateQuote(updated)
@@ -129,135 +121,104 @@ fun QuoteScreen(viewModel: QuoteViewModel) {
 }
 
 @Composable
-private fun SunnyHeader() {
+private fun JapandiHeader() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFFFF176),
-                        Color(0xFFFFF9C4),
-                    )
-                )
-            )
-            .border(
-                width = 1.dp,
-                color = Color(0xFFFFD600).copy(alpha = 0.40f),
-                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
-            )
+            .background(Surface)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 24.dp, vertical = 20.dp)
+                .padding(horizontal = 28.dp, vertical = 22.dp)
         ) {
             Text(
-                text = "QuoteDay ☀️",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = TextPrimary,
-                letterSpacing = (-0.5).sp,
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = "Your daily inspiration",
-                fontSize = 13.sp,
+                text = "QuoteDay",
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Medium,
+                color = TextPrimary,
+                letterSpacing = 1.sp,
+            )
+            Spacer(modifier = Modifier.height(3.dp))
+            Text(
+                text = "your daily words",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
                 color = TextSecondary,
-                letterSpacing = 0.2.sp,
+                letterSpacing = 1.5.sp,
             )
         }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(1.5.dp)
-                .background(Color(0xFFFFD600).copy(alpha = 0.35f))
+                .height(1.dp)
+                .background(CardBorder)
                 .align(Alignment.BottomCenter)
         )
     }
 }
 
 @Composable
-private fun SunnyQuoteItem(quote: Quote, onClick: () -> Unit) {
+private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
     val clipboard = LocalClipboardManager.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp)
             .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = CardShadow,
-                spotColor = CardShadow,
+                elevation = 1.dp,
+                shape = RoundedCornerShape(12.dp),
+                ambientColor = Charcoal.copy(alpha = 0.06f),
+                spotColor = Charcoal.copy(alpha = 0.06f),
             )
-            .clip(RoundedCornerShape(20.dp))
-            .background(CardFill)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Surface)
             .border(
                 width = 1.dp,
                 color = CardBorder,
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color(0xFFFFD600).copy(alpha = 0.70f),
-                            Color(0xFFFFD600).copy(alpha = 0.70f),
-                            Color.Transparent,
-                        )
-                    )
-                )
-                .align(Alignment.TopCenter)
-        )
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(start = 20.dp, top = 12.dp, bottom = 12.dp, end = 4.dp),
+                .padding(start = 0.dp, top = 18.dp, bottom = 18.dp, end = 4.dp),
         ) {
             Box(
                 modifier = Modifier
                     .width(3.dp)
-                    .height(36.dp)
+                    .height(32.dp)
                     .align(Alignment.CenterVertically)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(AccentAmber)
+                    .background(AccentTaupe)
             )
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(18.dp))
 
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
+                    .weight(1f),
             ) {
                 Text(
                     text = quote.text,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontStyle = FontStyle.Italic,
                     color = TextPrimary,
                     overflow = TextOverflow.Ellipsis,
                     lineHeight = 22.sp,
                     maxLines = 2,
+                    letterSpacing = 0.2.sp,
                 )
-                Spacer(modifier = Modifier.weight(1f))
                 if (quote.author.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "— ${quote.author}",
-                        fontSize = 12.sp,
-                        color = AccentAmberDark,
-                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 11.sp,
+                        color = AccentSage,
+                        fontWeight = FontWeight.Medium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        letterSpacing = 0.5.sp,
                     )
                 }
             }
@@ -280,7 +241,7 @@ private fun SunnyQuoteItem(quote: Quote, onClick: () -> Unit) {
                     imageVector = Icons.Default.ContentCopy,
                     contentDescription = "Copy",
                     tint = TextMuted,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
@@ -288,106 +249,85 @@ private fun SunnyQuoteItem(quote: Quote, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SunnyEmptyState(modifier: Modifier = Modifier) {
+private fun JapandiEmptyState(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(180.dp)
-                .clip(CircleShape)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFFFD600).copy(alpha = 0.25f),
-                            Color.Transparent,
-                        )
-                    )
-                )
-                .border(
-                    width = 1.dp,
-                    color = CardBorder,
-                    shape = CircleShape
-                )
-        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "☀️",
-                fontSize = 48.sp,
-                lineHeight = 52.sp,
+                text = "“",
+                fontSize = 64.sp,
+                color = AccentTaupe.copy(alpha = 0.35f),
+                fontWeight = FontWeight.Light,
+                lineHeight = 56.sp,
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "No quotes yet.",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary,
+                text = "No quotes yet",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                color = TextSecondary,
                 textAlign = TextAlign.Center,
+                letterSpacing = 0.8.sp,
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = "Tap + to add your first one.",
-                fontSize = 13.sp,
-                color = TextSecondary,
+                text = "tap  +  to begin",
+                fontSize = 11.sp,
+                color = TextMuted,
                 textAlign = TextAlign.Center,
+                letterSpacing = 1.5.sp,
             )
         }
     }
 }
 
 @Composable
-private fun SunnyFab(onClick: () -> Unit) {
+private fun JapandiFab(onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .padding(bottom = 24.dp, end = 8.dp)
-            .size(60.dp)
+            .padding(bottom = 28.dp, end = 8.dp)
+            .size(56.dp)
             .shadow(
-                elevation = 8.dp,
+                elevation = 4.dp,
                 shape = CircleShape,
-                ambientColor = AccentAmber.copy(alpha = 0.40f),
-                spotColor = AccentAmber.copy(alpha = 0.40f),
+                ambientColor = Charcoal.copy(alpha = 0.25f),
+                spotColor = Charcoal.copy(alpha = 0.25f),
             )
             .clip(CircleShape)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFFFFD600),
-                        Color(0xFFFFB300),
-                    )
-                )
-            )
+            .background(Charcoal)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Add quote",
-            tint = Color(0xFF1A1208),
-            modifier = Modifier.size(26.dp)
+            tint = Surface,
+            modifier = Modifier.size(22.dp)
         )
     }
 }
 
 @Composable
-private fun SunnyAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss: () -> Unit) {
+private fun JapandiAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss: () -> Unit) {
     var text by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     val canConfirm = text.isNotBlank()
 
-    val sunnyFieldColors = OutlinedTextFieldDefaults.colors(
+    val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = TextPrimary,
         unfocusedTextColor = TextPrimary,
-        cursorColor = AccentAmber,
-        focusedBorderColor = AccentAmber,
-        unfocusedBorderColor = Color(0xFFFFD600).copy(alpha = 0.60f),
-        focusedLabelColor = AccentAmberDark,
-        unfocusedLabelColor = TextSecondary,
-        focusedContainerColor = Color(0xFFFFFDE7),
-        unfocusedContainerColor = Color(0xFFFFFDE7),
+        cursorColor = AccentTaupe,
+        focusedBorderColor = AccentTaupe,
+        unfocusedBorderColor = CardBorder,
+        focusedLabelColor = AccentTaupe,
+        unfocusedLabelColor = TextMuted,
+        focusedContainerColor = Background,
+        unfocusedContainerColor = Background,
     )
 
     Dialog(
@@ -397,7 +337,7 @@ private fun SunnyAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss: 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF1A1208).copy(alpha = 0.40f))
+                .background(Charcoal.copy(alpha = 0.35f))
                 .clickable(onClick = onDismiss),
             contentAlignment = Alignment.Center
         ) {
@@ -406,70 +346,55 @@ private fun SunnyAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss: 
                     .padding(horizontal = 24.dp)
                     .fillMaxWidth()
                     .shadow(
-                        elevation = 16.dp,
-                        shape = RoundedCornerShape(28.dp),
-                        ambientColor = AccentAmber.copy(alpha = 0.20f),
-                        spotColor = AccentAmber.copy(alpha = 0.20f),
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = Charcoal.copy(alpha = 0.12f),
+                        spotColor = Charcoal.copy(alpha = 0.12f),
                     )
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFFFFFDE7),
-                                Color(0xFFFFF9C4),
-                            )
-                        )
-                    )
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Surface)
                     .border(
                         width = 1.dp,
-                        color = Color(0xFFFFD600).copy(alpha = 0.55f),
-                        shape = RoundedCornerShape(28.dp)
+                        color = CardBorder,
+                        shape = RoundedCornerShape(20.dp)
                     )
                     .clickable(enabled = false, onClick = {})
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color(0xFFFFD600).copy(alpha = 0.80f),
-                                    Color(0xFFFFD600).copy(alpha = 0.80f),
-                                    Color.Transparent,
-                                )
-                            )
-                        )
-                        .align(Alignment.TopCenter)
-                )
-
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 28.dp)
+                        .padding(horizontal = 28.dp, vertical = 32.dp)
                 ) {
                     Text(
-                        text = "New Quote ✨",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
+                        text = "New Quote",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
                         color = TextPrimary,
-                        letterSpacing = (-0.3).sp,
+                        letterSpacing = 0.8.sp,
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .width(28.dp)
+                            .height(1.dp)
+                            .background(AccentTaupe)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
-                        label = { Text("Quote", fontSize = 13.sp) },
+                        label = { Text("Quote", fontSize = 12.sp, letterSpacing = 0.5.sp) },
                         minLines = 4,
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Sentences
                         ),
-                        colors = sunnyFieldColors,
-                        shape = RoundedCornerShape(14.dp),
+                        colors = fieldColors,
+                        shape = RoundedCornerShape(10.dp),
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -477,53 +402,33 @@ private fun SunnyAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss: 
                     OutlinedTextField(
                         value = author,
                         onValueChange = { author = it },
-                        label = { Text("Author (optional)", fontSize = 13.sp) },
+                        label = { Text("Author (optional)", fontSize = 12.sp, letterSpacing = 0.5.sp) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Words
                         ),
-                        colors = sunnyFieldColors,
-                        shape = RoundedCornerShape(14.dp),
+                        colors = fieldColors,
+                        shape = RoundedCornerShape(10.dp),
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
-                            .shadow(
-                                elevation = if (canConfirm) 4.dp else 0.dp,
-                                shape = RoundedCornerShape(14.dp),
-                                ambientColor = AccentAmber.copy(alpha = 0.30f),
-                                spotColor = AccentAmber.copy(alpha = 0.30f),
-                            )
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(
-                                if (canConfirm)
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            Color(0xFFFFD600),
-                                            Color(0xFFFFB300),
-                                        )
-                                    )
-                                else
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            Color(0xFFE0E0E0),
-                                            Color(0xFFE0E0E0),
-                                        )
-                                    )
-                            )
+                            .height(48.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (canConfirm) Charcoal else CardBorder)
                             .clickable(enabled = canConfirm, onClick = { onConfirm(text, author) }),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Add Quote",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (canConfirm) Color(0xFF1A1208) else Color(0xFF9E9E9E),
+                            text = "Add",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = if (canConfirm) Surface else TextMuted,
+                            letterSpacing = 1.5.sp,
                         )
                     }
                 }
@@ -533,7 +438,7 @@ private fun SunnyAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss: 
 }
 
 @Composable
-private fun SunnyEditQuoteDialog(
+private fun JapandiEditQuoteDialog(
     quote: Quote,
     onSave: (Quote) -> Unit,
     onDelete: () -> Unit,
@@ -543,16 +448,16 @@ private fun SunnyEditQuoteDialog(
     var author by remember { mutableStateOf(quote.author) }
     val canSave = text.isNotBlank()
 
-    val sunnyFieldColors = OutlinedTextFieldDefaults.colors(
+    val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = TextPrimary,
         unfocusedTextColor = TextPrimary,
-        cursorColor = AccentAmber,
-        focusedBorderColor = AccentAmber,
-        unfocusedBorderColor = Color(0xFFFFD600).copy(alpha = 0.60f),
-        focusedLabelColor = AccentAmberDark,
-        unfocusedLabelColor = TextSecondary,
-        focusedContainerColor = Color(0xFFFFFDE7),
-        unfocusedContainerColor = Color(0xFFFFFDE7),
+        cursorColor = AccentTaupe,
+        focusedBorderColor = AccentTaupe,
+        unfocusedBorderColor = CardBorder,
+        focusedLabelColor = AccentTaupe,
+        unfocusedLabelColor = TextMuted,
+        focusedContainerColor = Background,
+        unfocusedContainerColor = Background,
     )
 
     Dialog(
@@ -562,7 +467,7 @@ private fun SunnyEditQuoteDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF1A1208).copy(alpha = 0.40f))
+                .background(Charcoal.copy(alpha = 0.35f))
                 .clickable(onClick = onDismiss),
             contentAlignment = Alignment.Center
         ) {
@@ -571,70 +476,55 @@ private fun SunnyEditQuoteDialog(
                     .padding(horizontal = 24.dp)
                     .fillMaxWidth()
                     .shadow(
-                        elevation = 16.dp,
-                        shape = RoundedCornerShape(28.dp),
-                        ambientColor = AccentAmber.copy(alpha = 0.20f),
-                        spotColor = AccentAmber.copy(alpha = 0.20f),
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = Charcoal.copy(alpha = 0.12f),
+                        spotColor = Charcoal.copy(alpha = 0.12f),
                     )
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFFFFFDE7),
-                                Color(0xFFFFF9C4),
-                            )
-                        )
-                    )
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Surface)
                     .border(
                         width = 1.dp,
-                        color = Color(0xFFFFD600).copy(alpha = 0.55f),
-                        shape = RoundedCornerShape(28.dp)
+                        color = CardBorder,
+                        shape = RoundedCornerShape(20.dp)
                     )
                     .clickable(enabled = false, onClick = {})
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color(0xFFFFD600).copy(alpha = 0.80f),
-                                    Color(0xFFFFD600).copy(alpha = 0.80f),
-                                    Color.Transparent,
-                                )
-                            )
-                        )
-                        .align(Alignment.TopCenter)
-                )
-
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 28.dp)
+                        .padding(horizontal = 28.dp, vertical = 32.dp)
                 ) {
                     Text(
                         text = "Edit Quote",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
                         color = TextPrimary,
-                        letterSpacing = (-0.3).sp,
+                        letterSpacing = 0.8.sp,
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .width(28.dp)
+                            .height(1.dp)
+                            .background(AccentTaupe)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
-                        label = { Text("Quote", fontSize = 13.sp) },
+                        label = { Text("Quote", fontSize = 12.sp, letterSpacing = 0.5.sp) },
                         minLines = 4,
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Sentences
                         ),
-                        colors = sunnyFieldColors,
-                        shape = RoundedCornerShape(14.dp),
+                        colors = fieldColors,
+                        shape = RoundedCornerShape(10.dp),
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -642,32 +532,31 @@ private fun SunnyEditQuoteDialog(
                     OutlinedTextField(
                         value = author,
                         onValueChange = { author = it },
-                        label = { Text("Author (optional)", fontSize = 13.sp) },
+                        label = { Text("Author (optional)", fontSize = 12.sp, letterSpacing = 0.5.sp) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Words
                         ),
-                        colors = sunnyFieldColors,
-                        shape = RoundedCornerShape(14.dp),
+                        colors = fieldColors,
+                        shape = RoundedCornerShape(10.dp),
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .height(50.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(Color(0xFFFFEBEE))
+                                .height(48.dp)
+                                .clip(RoundedCornerShape(10.dp))
                                 .border(
                                     width = 1.dp,
-                                    color = DeleteRed.copy(alpha = 0.35f),
-                                    shape = RoundedCornerShape(14.dp)
+                                    color = DeleteRed.copy(alpha = 0.40f),
+                                    shape = RoundedCornerShape(10.dp)
                                 )
                                 .clickable(onClick = onDelete),
                             contentAlignment = Alignment.Center
@@ -675,38 +564,17 @@ private fun SunnyEditQuoteDialog(
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete",
-                                tint = DeleteRed,
-                                modifier = Modifier.size(20.dp)
+                                tint = DeleteRed.copy(alpha = 0.75f),
+                                modifier = Modifier.size(18.dp)
                             )
                         }
 
                         Box(
                             modifier = Modifier
                                 .weight(2f)
-                                .height(50.dp)
-                                .shadow(
-                                    elevation = if (canSave) 4.dp else 0.dp,
-                                    shape = RoundedCornerShape(14.dp),
-                                    ambientColor = AccentAmber.copy(alpha = 0.30f),
-                                    spotColor = AccentAmber.copy(alpha = 0.30f),
-                                )
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(
-                                    if (canSave)
-                                        Brush.linearGradient(
-                                            colors = listOf(
-                                                Color(0xFFFFD600),
-                                                Color(0xFFFFB300),
-                                            )
-                                        )
-                                    else
-                                        Brush.linearGradient(
-                                            colors = listOf(
-                                                Color(0xFFE0E0E0),
-                                                Color(0xFFE0E0E0),
-                                            )
-                                        )
-                                )
+                                .height(48.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(if (canSave) Charcoal else CardBorder)
                                 .clickable(
                                     enabled = canSave,
                                     onClick = { onSave(quote.copy(text = text.trim(), author = author.trim())) }
@@ -715,9 +583,10 @@ private fun SunnyEditQuoteDialog(
                         ) {
                             Text(
                                 text = "Save",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (canSave) Color(0xFF1A1208) else Color(0xFF9E9E9E),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = if (canSave) Surface else TextMuted,
+                                letterSpacing = 1.5.sp,
                             )
                         }
                     }
