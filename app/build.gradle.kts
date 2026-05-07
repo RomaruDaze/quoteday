@@ -29,14 +29,14 @@ android {
             firebaseAppDistribution {
                 artifactType = "APK"
                 releaseNotes = "Latest QuoteDay build"
-                groups = "testers"
+                testers = "romarudazee99@gmail.com"
             }
         }
         debug {
             firebaseAppDistribution {
                 artifactType = "APK"
                 releaseNotes = "Debug build"
-                groups = "testers"
+                testers = "romarudazee99@gmail.com"
             }
         }
     }
