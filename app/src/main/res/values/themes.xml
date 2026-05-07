@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.QuoteDay" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.QuoteDay.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FFC933</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.QuoteDay</item>
+    </style>
 </resources>
