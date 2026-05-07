@@ -190,7 +190,7 @@ private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
                     .width(3.dp)
                     .height(32.dp)
                     .align(Alignment.CenterVertically)
-                    .background(AccentTaupe)
+                    .background(AccentMustard)
             )
 
             Spacer(modifier = Modifier.width(18.dp))
@@ -261,7 +261,7 @@ private fun JapandiEmptyState(modifier: Modifier = Modifier) {
             Text(
                 text = "“",
                 fontSize = 64.sp,
-                color = AccentTaupe.copy(alpha = 0.35f),
+                color = AccentMustard.copy(alpha = 0.35f),
                 fontWeight = FontWeight.Light,
                 lineHeight = 56.sp,
             )
@@ -321,10 +321,10 @@ private fun JapandiAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss
     val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = TextPrimary,
         unfocusedTextColor = TextPrimary,
-        cursorColor = AccentTaupe,
-        focusedBorderColor = AccentTaupe,
+        cursorColor = AccentMustard,
+        focusedBorderColor = AccentMustard,
         unfocusedBorderColor = CardBorder,
-        focusedLabelColor = AccentTaupe,
+        focusedLabelColor = AccentMustard,
         unfocusedLabelColor = TextMuted,
         focusedContainerColor = Background,
         unfocusedContainerColor = Background,
@@ -379,7 +379,7 @@ private fun JapandiAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss
                         modifier = Modifier
                             .width(28.dp)
                             .height(1.dp)
-                            .background(AccentTaupe)
+                            .background(AccentMustard)
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -451,10 +451,10 @@ private fun JapandiEditQuoteDialog(
     val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = TextPrimary,
         unfocusedTextColor = TextPrimary,
-        cursorColor = AccentTaupe,
-        focusedBorderColor = AccentTaupe,
+        cursorColor = AccentMustard,
+        focusedBorderColor = AccentMustard,
         unfocusedBorderColor = CardBorder,
-        focusedLabelColor = AccentTaupe,
+        focusedLabelColor = AccentMustard,
         unfocusedLabelColor = TextMuted,
         focusedContainerColor = Background,
         unfocusedContainerColor = Background,
@@ -509,7 +509,7 @@ private fun JapandiEditQuoteDialog(
                         modifier = Modifier
                             .width(28.dp)
                             .height(1.dp)
-                            .background(AccentTaupe)
+                            .background(AccentMustard)
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
