@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
     ) { /* permission result handled silently */ }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         NotificationHelper.createChannel(this)
