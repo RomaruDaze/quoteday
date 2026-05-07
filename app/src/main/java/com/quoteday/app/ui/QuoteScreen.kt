@@ -33,16 +33,16 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.quoteday.app.data.Quote
 
-private val Background   = Color(0xFFF5F0EB)
-private val Surface      = Color(0xFFFAF8F5)
-private val CardBorder   = Color(0xFFDDD8D2)
-private val AccentTaupe  = Color(0xFF6B5E52)
-private val AccentSage   = Color(0xFF7A9080)
-private val TextPrimary  = Color(0xFF1C1A18)
-private val TextSecondary = Color(0xFF6B6560)
-private val TextMuted    = Color(0xFFA09890)
-private val Charcoal     = Color(0xFF2C2824)
-private val DeleteRed    = Color(0xFFC0392B)
+private val Background    = Color(0xFFF5EDD0)
+private val Surface       = Color(0xFFFCF8EC)
+private val CardBorder    = Color(0xFFE0D4A8)
+private val AccentMustard = Color(0xFFB5892A)
+private val AccentWarm    = Color(0xFF7A6A45)
+private val TextPrimary   = Color(0xFF1C1910)
+private val TextSecondary = Color(0xFF6B5E38)
+private val TextMuted     = Color(0xFFA09068)
+private val Charcoal      = Color(0xFF3A2E18)
+private val DeleteRed     = Color(0xFFC0392B)
 
 @Composable
 fun QuoteScreen(viewModel: QuoteViewModel) {
