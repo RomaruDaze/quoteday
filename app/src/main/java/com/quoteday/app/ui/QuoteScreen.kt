@@ -138,27 +138,38 @@ private fun JapandiHeader() {
             .fillMaxWidth()
             .background(Surface)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 28.dp, vertical = 22.dp)
+                .padding(horizontal = 20.dp, vertical = 18.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "QuoteDay",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Medium,
-                color = TextPrimary,
-                letterSpacing = 1.sp,
+            Image(
+                painter = painterResource(R.mipmap.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(RoundedCornerShape(12.dp))
             )
-            Spacer(modifier = Modifier.height(3.dp))
-            Text(
-                text = "your daily words",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = TextSecondary,
-                letterSpacing = 1.5.sp,
-            )
+            Spacer(modifier = Modifier.width(14.dp))
+            Column {
+                Text(
+                    text = "QuoteDay",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = TextPrimary,
+                    letterSpacing = 1.sp,
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "your daily words",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = TextSecondary,
+                    letterSpacing = 1.5.sp,
+                )
+            }
         }
         Box(
             modifier = Modifier
