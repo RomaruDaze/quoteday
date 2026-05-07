@@ -10,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,16 +18,6 @@ import androidx.compose.ui.unit.sp
 import com.quoteday.app.BuildConfig
 import com.quoteday.app.R
 import kotlinx.coroutines.delay
-
-private val SplashBackground = Brush.verticalGradient(
-    colors = listOf(
-        Color(0xFFFFFFFF),
-        Color(0xFFFFF3A0),
-        Color(0xFFFFDE59),
-    ),
-    startY = 0f,
-    endY = 2200f
-)
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
@@ -40,7 +29,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = SplashBackground)
+            .background(Color(0xFFFFE98E))
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
