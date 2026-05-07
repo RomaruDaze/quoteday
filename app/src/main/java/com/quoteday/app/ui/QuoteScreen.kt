@@ -72,7 +72,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             contentColor = TextPrimary,
-            topBar = { JapandiHeader() },
+            topBar = { JapandiHeader(onSettingsClick = onSettingsClick) },
             floatingActionButton = {
                 JapandiFab(onClick = { showDialog = true })
             }
