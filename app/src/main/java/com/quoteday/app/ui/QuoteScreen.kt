@@ -35,9 +35,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.quoteday.app.data.Quote
 
-private val Background    = Color(0xFFF5EDD0)
-private val Surface       = Color(0xFFFCF8EC)
-private val CardBorder    = Color(0xFFE0D4A8)
+private val Background    = Color(0xFFFFDE59)
+private val Surface       = Color(0xFFFFFCF0)
+private val CardBorder    = Color(0xFFE8C830)
 private val AccentMustard = Color(0xFFB5892A)
 private val AccentWarm    = Color(0xFF7A6A45)
 private val TextPrimary   = Color(0xFF1C1910)
