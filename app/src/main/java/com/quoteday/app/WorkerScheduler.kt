@@ -29,7 +29,7 @@ fun Context.scheduleDailyQuote() {
 
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
         WORK_NAME,
-        ExistingPeriodicWorkPolicy.UPDATE,
+        ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
         request
     )
 }
