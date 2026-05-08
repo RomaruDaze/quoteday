@@ -14,8 +14,8 @@ android {
         applicationId = "com.quoteday.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
 
     buildTypes {
@@ -70,5 +70,6 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.core.splashscreen)
+    implementation(libs.google.play.billing.ktx)
     debugImplementation(libs.androidx.ui.tooling)
 }

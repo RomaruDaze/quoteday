@@ -1,5 +1,6 @@
 package com.quoteday.app.ui
 
+import android.app.Activity
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,15 +9,18 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.quoteday.app.SettingsPrefs
+import com.quoteday.app.data.BillingRepository
 import com.quoteday.app.data.FirestoreRepository
 import com.quoteday.app.data.Quote
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -24,6 +28,14 @@ import kotlinx.coroutines.tasks.await
 @OptIn(ExperimentalCoroutinesApi::class)
 class QuoteViewModel(application: Application) : AndroidViewModel(application) {
     private val auth = Firebase.auth
+
+    private val billingRepository = BillingRepository(
+        context = application,
+        scope = viewModelScope,
+        onPurchaseSuccess = {
+            auth.currentUser?.uid?.let { FirestoreRepository.setPremium(it) }
+        }
+    )
 
     private val _currentUser = MutableStateFlow<FirebaseUser?>(auth.currentUser)
     val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
@@ -39,9 +51,47 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
             initialValue = emptyList()
         )
 
+    val isPremium: StateFlow<Boolean> = currentUser
+        .flatMapLatest { user ->
+            if (user == null) flowOf(false)
+            else FirestoreRepository.observeUser(user.uid).map { it.isPremium }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
+        )
+
+    val limitReached: StateFlow<Boolean> = combine(quotes, isPremium) { q, premium ->
+        !premium && q.size >= FREE_QUOTE_LIMIT
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false
+    )
+
+    private val _showUpgradePrompt = MutableStateFlow(false)
+    val showUpgradePrompt: StateFlow<Boolean> = _showUpgradePrompt.asStateFlow()
+
+    fun triggerUpgradePrompt() { _showUpgradePrompt.value = true }
+    fun dismissUpgradePrompt() { _showUpgradePrompt.value = false }
+
     init {
         auth.addAuthStateListener { _currentUser.value = it.currentUser }
-        auth.currentUser?.let { SettingsPrefs.setUid(getApplication(), it.uid) }
+        auth.currentUser?.let { user ->
+            SettingsPrefs.setUid(getApplication(), user.uid)
+            viewModelScope.launch { FirestoreRepository.createUserIfAbsent(user.uid) }
+        }
+        billingRepository.connect()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        billingRepository.disconnect()
+    }
+
+    fun launchPurchase(activity: Activity) {
+        viewModelScope.launch { billingRepository.launchPurchase(activity) }
     }
 
     fun onGoogleIdToken(idToken: String) {
@@ -52,6 +102,7 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
                 result.user?.let { user ->
                     _currentUser.value = user
                     SettingsPrefs.setUid(getApplication(), user.uid)
+                    FirestoreRepository.createUserIfAbsent(user.uid)
                     maybeSeeds(user.uid)
                 }
             } catch (_: Exception) { }
@@ -71,6 +122,7 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addQuote(text: String, author: String) {
         if (text.isBlank()) return
+        if (limitReached.value) { _showUpgradePrompt.value = true; return }
         val uid = auth.currentUser?.uid ?: return
         viewModelScope.launch { FirestoreRepository.add(uid, text.trim(), author.trim()) }
     }
@@ -93,5 +145,9 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
         SettingsPrefs.setUid(getApplication(), null)
         auth.signOut()
         _currentUser.value = null
+    }
+
+    companion object {
+        const val FREE_QUOTE_LIMIT = 20
     }
 }

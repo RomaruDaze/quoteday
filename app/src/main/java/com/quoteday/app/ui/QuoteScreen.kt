@@ -34,9 +34,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.quoteday.app.data.Quote
+import com.quoteday.app.ui.QuoteViewModel.Companion.FREE_QUOTE_LIMIT
 
 private val Background    = Brush.verticalGradient(
     colors = listOf(
@@ -60,6 +62,9 @@ private val DeleteRed     = Color(0xFFC0392B)
 @Composable
 fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
     val quotes by viewModel.quotes.collectAsState()
+    val isPremium by viewModel.isPremium.collectAsState()
+    val limitReached by viewModel.limitReached.collectAsState()
+    val showUpgradePrompt by viewModel.showUpgradePrompt.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var editingQuote by remember { mutableStateOf<Quote?>(null) }
 
@@ -72,9 +77,21 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             contentColor = TextPrimary,
-            topBar = { JapandiHeader(onSettingsClick = onSettingsClick) },
+            topBar = {
+                JapandiHeader(
+                    onSettingsClick = onSettingsClick,
+                    quoteCount = quotes.size,
+                    isPremium = isPremium
+                )
+            },
             floatingActionButton = {
-                JapandiFab(onClick = { showDialog = true })
+                JapandiFab(
+                    enabled = !limitReached,
+                    onClick = {
+                        if (limitReached) viewModel.triggerUpgradePrompt()
+                        else showDialog = true
+                    }
+                )
             }
         ) { padding ->
             if (quotes.isEmpty()) {
@@ -131,10 +148,25 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
             onDismiss = { editingQuote = null }
         )
     }
+
+    if (showUpgradePrompt) {
+        val activity = LocalContext.current as android.app.Activity
+        JapandiUpgradeDialog(
+            onUpgradeClick = {
+                viewModel.dismissUpgradePrompt()
+                viewModel.launchPurchase(activity)
+            },
+            onDismiss = { viewModel.dismissUpgradePrompt() }
+        )
+    }
 }
 
 @Composable
-private fun JapandiHeader(onSettingsClick: () -> Unit) {
+private fun JapandiHeader(
+    onSettingsClick: () -> Unit,
+    quoteCount: Int,
+    isPremium: Boolean,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,6 +201,17 @@ private fun JapandiHeader(onSettingsClick: () -> Unit) {
                     color = TextSecondary,
                     letterSpacing = 1.5.sp,
                 )
+                if (!isPremium) {
+                    Spacer(modifier = Modifier.height(3.dp))
+                    Text(
+                        text = "$quoteCount / $FREE_QUOTE_LIMIT quotes",
+                        fontSize = 10.sp,
+                        color = if (quoteCount >= FREE_QUOTE_LIMIT) DeleteRed.copy(alpha = 0.8f)
+                                else AccentMustard.copy(alpha = 0.7f),
+                        letterSpacing = 0.8.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
             }
             IconButton(onClick = onSettingsClick) {
                 Icon(
@@ -320,26 +363,26 @@ private fun JapandiEmptyState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun JapandiFab(onClick: () -> Unit) {
+private fun JapandiFab(enabled: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .padding(bottom = 28.dp, end = 8.dp)
             .size(56.dp)
             .shadow(
-                elevation = 4.dp,
+                elevation = if (enabled) 4.dp else 1.dp,
                 shape = CircleShape,
-                ambientColor = Charcoal.copy(alpha = 0.25f),
-                spotColor = Charcoal.copy(alpha = 0.25f),
+                ambientColor = Charcoal.copy(alpha = if (enabled) 0.25f else 0.08f),
+                spotColor = Charcoal.copy(alpha = if (enabled) 0.25f else 0.08f),
             )
             .clip(CircleShape)
-            .background(Charcoal)
+            .background(if (enabled) Charcoal else CardBorder)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = Icons.Default.Add,
-            contentDescription = "Add quote",
-            tint = Surface,
+            contentDescription = if (enabled) "Add quote" else "Upgrade to add more",
+            tint = if (enabled) Surface else TextMuted,
             modifier = Modifier.size(22.dp)
         )
     }
@@ -622,6 +665,125 @@ private fun JapandiEditQuoteDialog(
                                 letterSpacing = 1.5.sp,
                             )
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun JapandiUpgradeDialog(onUpgradeClick: () -> Unit, onDismiss: () -> Unit) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Charcoal.copy(alpha = 0.35f))
+                .clickable(onClick = onDismiss),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = Charcoal.copy(alpha = 0.12f),
+                        spotColor = Charcoal.copy(alpha = 0.12f),
+                    )
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Surface)
+                    .border(
+                        width = 1.dp,
+                        color = CardBorder,
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .clickable(enabled = false, onClick = {})
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp, vertical = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "“",
+                        fontSize = 52.sp,
+                        color = AccentMustard.copy(alpha = 0.5f),
+                        fontWeight = FontWeight.Light,
+                        lineHeight = 44.sp,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Unlock Unlimited",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = TextPrimary,
+                        letterSpacing = 0.8.sp,
+                        textAlign = TextAlign.Center,
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .width(28.dp)
+                            .height(1.dp)
+                            .background(AccentMustard)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "You've reached the $FREE_QUOTE_LIMIT-quote limit.\nUpgrade once to add as many quotes as you like.",
+                        fontSize = 13.sp,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 20.sp,
+                        letterSpacing = 0.3.sp,
+                    )
+
+                    Spacer(modifier = Modifier.height(28.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Charcoal)
+                            .clickable(onClick = onUpgradeClick),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Upgrade",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Surface,
+                            letterSpacing = 1.5.sp,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                            .clickable(onClick = onDismiss),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Not now",
+                            fontSize = 12.sp,
+                            color = TextMuted,
+                            letterSpacing = 1.sp,
+                        )
                     }
                 }
             }

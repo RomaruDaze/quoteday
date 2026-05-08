@@ -10,8 +10,37 @@ import kotlinx.coroutines.tasks.await
 object FirestoreRepository {
     private val db get() = Firebase.firestore
 
+    private fun userDoc(uid: String) =
+        db.collection("users").document(uid)
+
     private fun col(uid: String) =
-        db.collection("users").document(uid).collection("quotes")
+        userDoc(uid).collection("quotes")
+
+    // ── User document ────────────────────────────────────────────────────────
+
+    fun observeUser(uid: String): Flow<User> = callbackFlow {
+        val listener = userDoc(uid).addSnapshotListener { snap, err ->
+            if (err != null) { trySend(User()); return@addSnapshotListener }
+            trySend(User(isPremium = snap?.getBoolean("isPremium") ?: false))
+        }
+        awaitClose { listener.remove() }
+    }
+
+    suspend fun createUserIfAbsent(uid: String) {
+        try {
+            val ref = userDoc(uid)
+            if (!ref.get().await().exists()) {
+                ref.set(mapOf("isPremium" to false, "createdAt" to System.currentTimeMillis())).await()
+            }
+        } catch (_: Exception) { }
+    }
+
+    suspend fun setPremium(uid: String) {
+        try { userDoc(uid).update("isPremium", true).await() }
+        catch (_: Exception) { }
+    }
+
+    // ── Quotes collection ────────────────────────────────────────────────────
 
     fun observe(uid: String): Flow<List<Quote>> = callbackFlow {
         val listener = col(uid).addSnapshotListener { snap, err ->
