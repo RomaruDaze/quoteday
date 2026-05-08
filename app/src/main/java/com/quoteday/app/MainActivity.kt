@@ -7,15 +7,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.quoteday.app.notification.NotificationHelper
 import com.quoteday.app.ui.QuoteScreen
 import com.quoteday.app.ui.QuoteViewModel
 import com.quoteday.app.ui.SettingsScreen
 import com.quoteday.app.ui.SettingsViewModel
+import com.quoteday.app.ui.SignInScreen
 import com.quoteday.app.ui.SplashScreen
 import com.quoteday.app.ui.theme.QuoteDayTheme
 
@@ -27,7 +32,17 @@ class MainActivity : ComponentActivity() {
 
     private val requestPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { /* permission result handled silently */ }
+    ) { /* handled silently */ }
+
+    private val signInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)!!
+            account.idToken?.let { viewModel.onGoogleIdToken(it) }
+        } catch (_: Exception) { }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +56,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             QuoteDayTheme {
+                val currentUser by viewModel.currentUser.collectAsState()
                 var splashVisible by remember { mutableStateOf(true) }
                 var currentScreen by remember { mutableStateOf(Screen.Quote) }
+
                 if (splashVisible) {
                     SplashScreen { splashVisible = false }
+                } else if (currentUser == null) {
+                    SignInScreen(onSignInClick = { launchGoogleSignIn() })
                 } else {
                     when (currentScreen) {
                         Screen.Quote -> QuoteScreen(
@@ -59,5 +78,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun launchGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        signInLauncher.launch(GoogleSignIn.getClient(this, gso).signInIntent)
     }
 }

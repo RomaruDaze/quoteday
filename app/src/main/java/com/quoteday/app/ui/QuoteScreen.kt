@@ -96,7 +96,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
                     ),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    items(quotes, key = { it.id }) { quote ->
+                    items(quotes, key = { it.firestoreId }) { quote ->
                         JapandiQuoteItem(
                             quote = quote,
                             onClick = { editingQuote = quote }

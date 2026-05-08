@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.quoteday.app.SettingsPrefs
 import com.quoteday.app.cancelDailyQuote
-import com.quoteday.app.data.QuoteDatabase
+import com.quoteday.app.data.FirestoreRepository
 import com.quoteday.app.notification.NotificationHelper
 import com.quoteday.app.scheduleDailyQuote
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +40,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     fun testNotification() {
         viewModelScope.launch {
-            val quote = QuoteDatabase.getDatabase(ctx).quoteDao().getRandom() ?: return@launch
+            val uid = SettingsPrefs.getUid(ctx) ?: return@launch
+            val quote = FirestoreRepository.fetchAll(uid).randomOrNull() ?: return@launch
             NotificationHelper.showQuoteNotification(ctx, quote.text)
         }
     }
