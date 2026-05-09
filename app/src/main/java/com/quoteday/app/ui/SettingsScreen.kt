@@ -1,8 +1,7 @@
 package com.quoteday.app.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,14 +37,16 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
             is24Hour = false,
         )
         Dialog(onDismissRequest = { showTimePicker = false }) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(colors.surface)
-                    .border(1.dp, colors.cardBorder, RoundedCornerShape(20.dp))
-                    .padding(24.dp)
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = colors.surface,
+                border = BorderStroke(1.dp, colors.cardBorder),
+                tonalElevation = 6.dp,
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     TimePicker(state = timePickerState)
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
@@ -54,33 +54,19 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { showTimePicker = false }
-                                .padding(horizontal = 16.dp, vertical = 10.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text("Cancel", color = colors.textSecondary, fontSize = 14.sp)
-                        }
+                        TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(colors.buttonBackground)
-                                .clickable {
-                                    viewModel.setNotificationTime(timePickerState.hour, timePickerState.minute)
-                                    showTimePicker = false
-                                }
-                                .padding(horizontal = 20.dp, vertical = 10.dp),
-                            contentAlignment = Alignment.Center,
+                        Button(
+                            onClick = {
+                                viewModel.setNotificationTime(timePickerState.hour, timePickerState.minute)
+                                showTimePicker = false
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colors.buttonBackground,
+                                contentColor = colors.buttonContent,
+                            ),
                         ) {
-                            Text(
-                                text = "Set",
-                                color = colors.buttonContent,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                            )
+                            Text("Set")
                         }
                     }
                 }
@@ -88,202 +74,171 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(brush = colors.background)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(colors.surface)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(horizontal = 8.dp, vertical = 14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = colors.textPrimary,
-                    )
-                }
-                Text(
-                    text = "Settings",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = colors.textPrimary,
-                    letterSpacing = 0.8.sp,
-                    modifier = Modifier.padding(start = 4.dp),
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(colors.cardBorder.copy(alpha = 0.5f))
-                    .align(Alignment.BottomCenter)
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            SectionLabel("NOTIFICATIONS", colors.textMuted)
-            Spacer(modifier = Modifier.height(2.dp))
-
-            SettingsCard(colors = colors) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 18.dp, vertical = 14.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column {
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                TopAppBar(
+                    title = {
                         Text(
-                            text = "Daily Notification",
-                            fontSize = 14.sp,
+                            text = "Settings",
+                            style = MaterialTheme.typography.titleLarge,
                             color = colors.textPrimary,
-                            fontWeight = FontWeight.Medium,
-                            letterSpacing = 0.2.sp,
                         )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = "Receive a quote every day",
-                            fontSize = 12.sp,
-                            color = colors.textSecondary,
-                        )
-                    }
-                    Switch(
-                        checked = notificationEnabled,
-                        onCheckedChange = { viewModel.setNotificationEnabled(it) },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = colors.surface,
-                            checkedTrackColor = colors.accentMustard,
-                            uncheckedThumbColor = colors.textMuted,
-                            uncheckedTrackColor = colors.cardBorder,
-                        )
-                    )
-                }
-            }
-
-            SettingsCard(
-                colors = colors,
-                onClick = if (notificationEnabled) ({ showTimePicker = true }) else null,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 18.dp, vertical = 18.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column {
-                        Text(
-                            text = "Notification Time",
-                            fontSize = 14.sp,
-                            color = if (notificationEnabled) colors.textPrimary else colors.textMuted,
-                            fontWeight = FontWeight.Medium,
-                            letterSpacing = 0.2.sp,
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = formatNotifTime(notificationHour, notificationMinute),
-                            fontSize = 12.sp,
-                            color = if (notificationEnabled) colors.accentMustard else colors.textMuted,
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = if (notificationEnabled) colors.textSecondary else colors.textMuted,
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            SectionLabel("PURCHASE", colors.textMuted)
-            Spacer(modifier = Modifier.height(2.dp))
-
-            SettingsCard(colors = colors, onClick = onRestorePurchases) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 18.dp, vertical = 18.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Restore Purchase",
-                        fontSize = 14.sp,
-                        color = colors.textPrimary,
-                        fontWeight = FontWeight.Medium,
-                        letterSpacing = 0.2.sp,
-                    )
-                    Icon(
-                        imageVector = Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = colors.textSecondary,
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(colors.buttonBackground)
-                    .clickable { viewModel.testNotification() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Send Test Notification",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = colors.buttonContent,
-                    letterSpacing = 1.sp,
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = colors.textPrimary,
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = colors.surface,
+                        scrolledContainerColor = colors.surface,
+                    ),
                 )
             }
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                SettingsSectionLabel("NOTIFICATIONS")
 
-            Spacer(modifier = Modifier.height(24.dp))
-            SectionLabel("ABOUT", colors.textMuted)
-            Spacer(modifier = Modifier.height(2.dp))
-
-            SettingsCard(colors = colors) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 18.dp, vertical = 18.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                OutlinedCard(
+                    colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+                    border = BorderStroke(1.dp, colors.cardBorder),
                 ) {
-                    Text(
-                        text = "Version",
-                        fontSize = 14.sp,
-                        color = colors.textPrimary,
-                        fontWeight = FontWeight.Medium,
-                        letterSpacing = 0.2.sp,
+                    ListItem(
+                        headlineContent = {
+                            Text("Daily Notification", fontWeight = FontWeight.Medium)
+                        },
+                        supportingContent = { Text("Receive a quote every day") },
+                        trailingContent = {
+                            Switch(
+                                checked = notificationEnabled,
+                                onCheckedChange = { viewModel.setNotificationEnabled(it) },
+                                colors = SwitchDefaults.colors(
+                                    checkedTrackColor = colors.accentMustard,
+                                    checkedThumbColor = colors.surface,
+                                ),
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent,
+                            headlineColor = colors.textPrimary,
+                            supportingColor = colors.textSecondary,
+                        ),
                     )
-                    Text(
-                        text = BuildConfig.VERSION_NAME,
-                        fontSize = 14.sp,
-                        color = colors.textMuted,
-                        letterSpacing = 0.2.sp,
+                }
+
+                OutlinedCard(
+                    onClick = { if (notificationEnabled) showTimePicker = true },
+                    enabled = notificationEnabled,
+                    colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+                    border = BorderStroke(
+                        1.dp,
+                        if (notificationEnabled) colors.cardBorder else colors.cardBorder.copy(alpha = 0.4f),
+                    ),
+                ) {
+                    ListItem(
+                        headlineContent = {
+                            Text(
+                                "Notification Time",
+                                fontWeight = FontWeight.Medium,
+                                color = if (notificationEnabled) colors.textPrimary else colors.textMuted,
+                            )
+                        },
+                        supportingContent = {
+                            Text(
+                                text = formatNotifTime(notificationHour, notificationMinute),
+                                color = if (notificationEnabled) colors.accentMustard else colors.textMuted,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        },
+                        trailingContent = {
+                            Icon(
+                                imageVector = Icons.Default.ChevronRight,
+                                contentDescription = null,
+                                tint = if (notificationEnabled) colors.textSecondary else colors.textMuted,
+                            )
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSectionLabel("PURCHASE")
+
+                OutlinedCard(
+                    onClick = onRestorePurchases,
+                    colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+                    border = BorderStroke(1.dp, colors.cardBorder),
+                ) {
+                    ListItem(
+                        headlineContent = {
+                            Text("Restore Purchase", fontWeight = FontWeight.Medium)
+                        },
+                        trailingContent = {
+                            Icon(
+                                imageVector = Icons.Default.ChevronRight,
+                                contentDescription = null,
+                                tint = colors.textSecondary,
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent,
+                            headlineColor = colors.textPrimary,
+                        ),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Button(
+                    onClick = { viewModel.testNotification() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colors.buttonBackground,
+                        contentColor = colors.buttonContent,
+                    ),
+                ) {
+                    Text("Send Test Notification", letterSpacing = 0.5.sp)
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSectionLabel("ABOUT")
+
+                OutlinedCard(
+                    colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+                    border = BorderStroke(1.dp, colors.cardBorder),
+                ) {
+                    ListItem(
+                        headlineContent = {
+                            Text("Version", fontWeight = FontWeight.Medium)
+                        },
+                        trailingContent = {
+                            Text(
+                                text = BuildConfig.VERSION_NAME,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colors.textMuted,
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent,
+                            headlineColor = colors.textPrimary,
+                        ),
                     )
                 }
             }
@@ -292,32 +247,15 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
 }
 
 @Composable
-private fun SectionLabel(text: String, color: Color) {
+private fun SettingsSectionLabel(text: String) {
+    val colors = LocalAppColors.current
     Text(
         text = text,
-        fontSize = 10.sp,
-        color = color,
-        letterSpacing = 2.sp,
-        fontWeight = FontWeight.Medium,
+        style = MaterialTheme.typography.labelSmall,
+        color = colors.textMuted,
+        letterSpacing = 1.5.sp,
+        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
     )
-}
-
-@Composable
-private fun SettingsCard(
-    colors: com.quoteday.app.ui.theme.AppColors,
-    onClick: (() -> Unit)? = null,
-    content: @Composable () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(colors.surface)
-            .border(1.dp, colors.cardBorder, RoundedCornerShape(12.dp))
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-    ) {
-        content()
-    }
 }
 
 private fun formatNotifTime(hour: Int, minute: Int): String {
