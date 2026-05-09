@@ -10,17 +10,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quoteday.app.BuildConfig
 import com.quoteday.app.R
+import com.quoteday.app.ui.theme.LocalAppColors
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
+    val colors = LocalAppColors.current
     LaunchedEffect(Unit) {
         delay(800L)
         onTimeout()
@@ -29,7 +30,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFE98E))
+            .background(brush = colors.background)
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
@@ -48,8 +49,8 @@ fun SplashScreen(onTimeout: () -> Unit) {
                 text = "QuoteDay",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF1C1910),
-                letterSpacing = 2.sp
+                color = colors.textPrimary,
+                letterSpacing = 2.sp,
             )
         }
 
@@ -59,8 +60,8 @@ fun SplashScreen(onTimeout: () -> Unit) {
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 40.dp),
             fontSize = 11.sp,
-            color = Color(0xFF6B5E38),
-            letterSpacing = 1.sp
+            color = colors.textSecondary,
+            letterSpacing = 1.sp,
         )
     }
 }
