@@ -72,7 +72,8 @@ class MainActivity : ComponentActivity() {
                         )
                         Screen.Settings -> SettingsScreen(
                             viewModel = settingsViewModel,
-                            onBack = { currentScreen = Screen.Quote }
+                            onBack = { currentScreen = Screen.Quote },
+                            onRestorePurchases = { viewModel.restorePurchases() }
                         )
                     }
                 }
