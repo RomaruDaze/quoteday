@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.FormatQuote
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,6 +40,8 @@ import com.quoteday.app.data.Quote
 import com.quoteday.app.ui.QuoteViewModel.Companion.FREE_QUOTE_LIMIT
 import com.quoteday.app.ui.theme.LocalAppColors
 import kotlinx.coroutines.launch
+
+private enum class Tab { Today, Quotes }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
