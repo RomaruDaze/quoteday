@@ -48,10 +48,12 @@ private enum class Tab { Today, Quotes }
 fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
     val colors = LocalAppColors.current
     val quotes by viewModel.quotes.collectAsState()
+    val todayQuote by viewModel.todayQuote.collectAsState()
     val isPremium by viewModel.isPremium.collectAsState()
     val limitReached by viewModel.limitReached.collectAsState()
     val showUpgradePrompt by viewModel.showUpgradePrompt.collectAsState()
     val productPrice by viewModel.productPrice.collectAsState()
+    var selectedTab by remember { mutableStateOf(Tab.Today) }
     var showDialog by remember { mutableStateOf(false) }
     var editingQuote by remember { mutableStateOf<Quote?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -80,9 +82,9 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
                                 color = colors.textPrimary,
                                 letterSpacing = 0.5.sp,
                             )
-                            if (!isPremium) {
+                            if (selectedTab == Tab.Quotes && !isPremium) {
                                 Text(
-                                    text = "${ quotes.size } / $FREE_QUOTE_LIMIT quotes",
+                                    text = "${quotes.size} / $FREE_QUOTE_LIMIT quotes",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = if (quotes.size >= FREE_QUOTE_LIMIT)
                                         colors.deleteRed.copy(alpha = 0.8f)
@@ -117,46 +119,86 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
                     scrollBehavior = scrollBehavior,
                 )
             },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        if (limitReached) viewModel.triggerUpgradePrompt()
-                        else showDialog = true
-                    },
-                    containerColor = colors.buttonBackground,
-                    contentColor = colors.buttonContent,
+            bottomBar = {
+                NavigationBar(
+                    containerColor = colors.surface,
+                    tonalElevation = 0.dp,
                 ) {
-                    Icon(
-                        imageVector = if (limitReached) Icons.Default.Lock else Icons.Default.Add,
-                        contentDescription = if (limitReached) "Upgrade to add more" else "Add quote",
+                    val navItemColors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = colors.accentMustard,
+                        selectedTextColor = colors.accentMustard,
+                        indicatorColor = colors.accentMustard.copy(alpha = 0.15f),
+                        unselectedIconColor = colors.textMuted,
+                        unselectedTextColor = colors.textMuted,
                     )
+                    NavigationBarItem(
+                        selected = selectedTab == Tab.Today,
+                        onClick = { selectedTab = Tab.Today },
+                        icon = { Icon(Icons.Outlined.AutoAwesome, contentDescription = "Today") },
+                        label = { Text("Today") },
+                        colors = navItemColors,
+                    )
+                    NavigationBarItem(
+                        selected = selectedTab == Tab.Quotes,
+                        onClick = { selectedTab = Tab.Quotes },
+                        icon = { Icon(Icons.Outlined.FormatQuote, contentDescription = "Quotes") },
+                        label = { Text("Quotes") },
+                        colors = navItemColors,
+                    )
+                }
+            },
+            floatingActionButton = {
+                if (selectedTab == Tab.Quotes) {
+                    FloatingActionButton(
+                        onClick = {
+                            if (limitReached) viewModel.triggerUpgradePrompt()
+                            else showDialog = true
+                        },
+                        containerColor = colors.buttonBackground,
+                        contentColor = colors.buttonContent,
+                    ) {
+                        Icon(
+                            imageVector = if (limitReached) Icons.Default.Lock else Icons.Default.Add,
+                            contentDescription = if (limitReached) "Upgrade to add more" else "Add quote",
+                        )
+                    }
                 }
             }
         ) { padding ->
-            if (quotes.isEmpty()) {
-                QuoteEmptyState(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
+            when (selectedTab) {
+                Tab.Today -> TodayQuoteScreen(
+                    quote = todayQuote,
+                    modifier = Modifier.padding(padding),
                 )
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentPadding = PaddingValues(
-                        start = 16.dp, end = 16.dp, top = 16.dp, bottom = 88.dp
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(quotes, key = { it.firestoreId }) { quote ->
-                        QuoteCard(
-                            quote = quote,
-                            onClick = { editingQuote = quote },
-                            onCopied = {
-                                scope.launch { snackbarHostState.showSnackbar("Copied to clipboard") }
-                            }
+                Tab.Quotes -> {
+                    if (quotes.isEmpty()) {
+                        QuoteEmptyState(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(padding)
                         )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(padding),
+                            contentPadding = PaddingValues(
+                                start = 16.dp, end = 16.dp, top = 16.dp, bottom = 88.dp
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(quotes, key = { it.firestoreId }) { quote ->
+                                QuoteCard(
+                                    quote = quote,
+                                    onClick = { editingQuote = quote },
+                                    onCopied = {
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar("Copied to clipboard")
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
