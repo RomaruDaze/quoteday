@@ -380,26 +380,26 @@ private fun JapandiEmptyState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun JapandiFab(enabled: Boolean, onClick: () -> Unit) {
+private fun JapandiFab(limitReached: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .padding(bottom = 28.dp, end = 8.dp)
             .size(56.dp)
             .shadow(
-                elevation = if (enabled) 4.dp else 1.dp,
+                elevation = 4.dp,
                 shape = CircleShape,
-                ambientColor = Charcoal.copy(alpha = if (enabled) 0.25f else 0.08f),
-                spotColor = Charcoal.copy(alpha = if (enabled) 0.25f else 0.08f),
+                ambientColor = Charcoal.copy(alpha = 0.25f),
+                spotColor = Charcoal.copy(alpha = 0.25f),
             )
             .clip(CircleShape)
-            .background(if (enabled) Charcoal else CardBorder)
+            .background(Charcoal)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = if (enabled) "Add quote" else "Upgrade to add more",
-            tint = if (enabled) Surface else TextMuted,
+            imageVector = if (limitReached) Icons.Default.Lock else Icons.Default.Add,
+            contentDescription = if (limitReached) "Upgrade to add more" else "Add quote",
+            tint = Surface,
             modifier = Modifier.size(22.dp)
         )
     }
