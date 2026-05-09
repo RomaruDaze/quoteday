@@ -35,6 +35,18 @@ object SettingsPrefs {
             if (uid == null) remove(KEY_UID) else putString(KEY_UID, uid)
         }.apply()
 
+    fun getTodayQuoteDate(context: Context): String? =
+        prefs(context).getString(KEY_TODAY_DATE, null)
+
+    fun getTodayQuoteId(context: Context): String? =
+        prefs(context).getString(KEY_TODAY_QUOTE_ID, null)
+
+    fun setTodayQuote(context: Context, date: String, quoteId: String) =
+        prefs(context).edit()
+            .putString(KEY_TODAY_DATE, date)
+            .putString(KEY_TODAY_QUOTE_ID, quoteId)
+            .apply()
+
     private fun prefs(context: Context) =
         context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
 }
