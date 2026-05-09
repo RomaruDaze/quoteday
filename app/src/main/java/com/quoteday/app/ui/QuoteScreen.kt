@@ -1,5 +1,6 @@
 package com.quoteday.app.ui
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -167,38 +168,41 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
                 }
             }
         ) { padding ->
-            when (selectedTab) {
-                Tab.Today -> TodayQuoteScreen(
-                    quote = todayQuote,
-                    modifier = Modifier.padding(padding),
-                )
-                Tab.Quotes -> {
-                    if (quotes.isEmpty()) {
-                        QuoteEmptyState(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(padding)
-                        )
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(padding),
-                            contentPadding = PaddingValues(
-                                start = 16.dp, end = 16.dp, top = 16.dp, bottom = 88.dp
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(quotes, key = { it.firestoreId }) { quote ->
-                                QuoteCard(
-                                    quote = quote,
-                                    onClick = { editingQuote = quote },
-                                    onCopied = {
-                                        scope.launch {
-                                            snackbarHostState.showSnackbar("Copied to clipboard")
+            Crossfade(targetState = selectedTab, label = "tab") { tab ->
+                when (tab) {
+                    Tab.Today -> TodayQuoteScreen(
+                        quote = todayQuote,
+                        modifier = Modifier.padding(padding),
+                    )
+                    Tab.Quotes -> {
+                        if (quotes.isEmpty()) {
+                            QuoteEmptyState(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(padding)
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(padding),
+                                contentPadding = PaddingValues(
+                                    start = 16.dp, end = 16.dp, top = 16.dp, bottom = 88.dp
+                                ),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(quotes, key = { it.firestoreId }) { quote ->
+                                    QuoteCard(
+                                        quote = quote,
+                                        modifier = Modifier.animateItem(),
+                                        onClick = { editingQuote = quote },
+                                        onCopied = {
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar("Copied to clipboard")
+                                            }
                                         }
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                     }
@@ -254,7 +258,7 @@ private fun QuoteEmptyState(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "“",
+                text = """,
                 fontSize = 64.sp,
                 color = colors.accentMustard.copy(alpha = 0.35f),
                 fontWeight = FontWeight.Light,
@@ -280,13 +284,18 @@ private fun QuoteEmptyState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun QuoteCard(quote: Quote, onClick: () -> Unit, onCopied: () -> Unit) {
+private fun QuoteCard(
+    quote: Quote,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    onCopied: () -> Unit,
+) {
     val colors = LocalAppColors.current
     val clipboard = LocalClipboardManager.current
 
     OutlinedCard(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
         border = BorderStroke(1.dp, colors.cardBorder),
         elevation = CardDefaults.outlinedCardElevation(defaultElevation = 1.dp),
@@ -338,7 +347,7 @@ private fun QuoteCard(quote: Quote, onClick: () -> Unit, onCopied: () -> Unit) {
                     imageVector = Icons.Default.ContentCopy,
                     contentDescription = "Copy",
                     tint = colors.textMuted,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }
@@ -544,7 +553,7 @@ private fun UpgradeDialog(productPrice: String?, onUpgradeClick: () -> Unit, onD
         onDismissRequest = onDismiss,
         icon = {
             Text(
-                text = "“",
+                text = """,
                 fontSize = 48.sp,
                 color = colors.accentMustard.copy(alpha = 0.6f),
                 fontWeight = FontWeight.Light,
