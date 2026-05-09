@@ -92,7 +92,7 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
                     )
                     Spacer(Modifier.height(12.dp))
                     AutoSizeText(
-                        text = quote.text,
+                        text = quote.text.replace(". ", ".\n"),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
