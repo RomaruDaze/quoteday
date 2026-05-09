@@ -78,6 +78,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
                             Text(
                                 text = "QuoteDay",
                                 style = MaterialTheme.typography.titleLarge,
+                                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
                                 fontWeight = FontWeight.Medium,
                                 color = colors.textPrimary,
                                 letterSpacing = 0.5.sp,
