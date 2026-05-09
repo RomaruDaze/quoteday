@@ -98,6 +98,8 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch { billingRepository.launchPurchase(activity) }
     }
 
+    fun restorePurchases() = billingRepository.triggerRestore()
+
     fun onGoogleIdToken(idToken: String) {
         viewModelScope.launch {
             try {
