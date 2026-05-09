@@ -20,6 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
+private val SettingsBackground = Brush.verticalGradient(
+    colors = listOf(Color(0xFFFFFFFF), Color(0xFFFFF3A0), Color(0xFFFFDE59)),
+    startY = 0f, endY = 4000f
+)
 private val SettingsSurface   = Color(0xFFFFFCF0)
 private val SettingsCardBorder = Color(0xFFE8C830)
 private val SettingsAccent    = Color(0xFFB5892A)
