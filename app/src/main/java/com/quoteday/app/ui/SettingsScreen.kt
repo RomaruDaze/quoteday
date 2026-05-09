@@ -42,21 +42,53 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
     var showTimePicker by remember { mutableStateOf(false) }
 
     if (showTimePicker) {
-        DisposableEffect(Unit) {
-            val dialog = TimePickerDialog(
-                context,
-                { _, hour, minute ->
-                    viewModel.setNotificationTime(hour, minute)
-                    showTimePicker = false
-                },
-                notificationHour,
-                notificationMinute,
-                false
-            ).apply {
-                setOnCancelListener { showTimePicker = false }
-                show()
+        val timePickerState = rememberTimePickerState(
+            initialHour = notificationHour,
+            initialMinute = notificationMinute,
+            is24Hour = false,
+        )
+        Dialog(onDismissRequest = { showTimePicker = false }) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(SettingsSurface)
+                    .border(1.dp, SettingsCardBorder, RoundedCornerShape(20.dp))
+                    .padding(24.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    TimePicker(state = timePickerState)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable { showTimePicker = false }
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text("Cancel", color = SettingsTextSecondary, fontSize = 14.sp)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(SettingsCharcoal)
+                                .clickable {
+                                    viewModel.setNotificationTime(timePickerState.hour, timePickerState.minute)
+                                    showTimePicker = false
+                                }
+                                .padding(horizontal = 20.dp, vertical = 10.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text("Set", color = SettingsSurface, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                        }
+                    }
+                }
             }
-            onDispose { dialog.dismiss() }
         }
     }
 
