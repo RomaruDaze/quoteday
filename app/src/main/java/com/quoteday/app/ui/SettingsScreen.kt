@@ -32,8 +32,9 @@ private val SettingsTextSecondary = Color(0xFF6B5E38)
 private val SettingsTextMuted     = Color(0xFFA09068)
 private val SettingsCharcoal      = Color(0xFF3A2E18)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
+fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePurchases: () -> Unit) {
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationHour by viewModel.notificationHour.collectAsState()
     val notificationMinute by viewModel.notificationMinute.collectAsState()
