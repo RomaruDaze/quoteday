@@ -251,7 +251,7 @@ private fun JapandiHeader(
 }
 
 @Composable
-private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
+private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit, onCopied: () -> Unit) {
     val clipboard = LocalClipboardManager.current
     Box(
         modifier = Modifier
@@ -274,7 +274,7 @@ private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 0.dp, top = 18.dp, bottom = 18.dp, end = 4.dp),
+                .padding(start = 16.dp, top = 18.dp, bottom = 18.dp, end = 4.dp),
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_quote),
@@ -283,11 +283,9 @@ private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
                 modifier = Modifier
                     .size(20.dp)
                     .align(Alignment.CenterVertically)
-                    .padding(start = 0.dp)
-                    .offset(x = 16.dp)
             )
 
-            Spacer(modifier = Modifier.width(28.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(
                 modifier = Modifier
@@ -300,7 +298,7 @@ private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
                     color = TextPrimary,
                     overflow = TextOverflow.Ellipsis,
                     lineHeight = 22.sp,
-                    maxLines = 2,
+                    maxLines = 4,
                     letterSpacing = 0.2.sp,
                 )
                 if (quote.author.isNotBlank()) {
@@ -319,7 +317,7 @@ private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
 
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(44.dp)
                     .align(Alignment.CenterVertically)
                     .clip(CircleShape)
                     .clickable {
@@ -328,6 +326,7 @@ private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit) {
                         else
                             quote.text
                         clipboard.setText(AnnotatedString(copyText))
+                        onCopied()
                     },
                 contentAlignment = Alignment.Center
             ) {
