@@ -691,7 +691,7 @@ private fun JapandiEditQuoteDialog(
 }
 
 @Composable
-private fun JapandiUpgradeDialog(onUpgradeClick: () -> Unit, onDismiss: () -> Unit) {
+private fun JapandiUpgradeDialog(productPrice: String?, onUpgradeClick: () -> Unit, onDismiss: () -> Unit) {
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
