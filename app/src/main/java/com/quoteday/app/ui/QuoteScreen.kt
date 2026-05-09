@@ -82,6 +82,16 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             contentColor = TextPrimary,
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState) { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = Charcoal,
+                        contentColor = Surface,
+                        shape = RoundedCornerShape(10.dp),
+                    )
+                }
+            },
             topBar = {
                 JapandiHeader(
                     onSettingsClick = onSettingsClick,
