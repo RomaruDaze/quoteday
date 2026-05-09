@@ -131,7 +131,10 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
                     items(quotes, key = { it.firestoreId }) { quote ->
                         JapandiQuoteItem(
                             quote = quote,
-                            onClick = { editingQuote = quote }
+                            onClick = { editingQuote = quote },
+                            onCopied = {
+                                scope.launch { snackbarHostState.showSnackbar("Copied to clipboard") }
+                            }
                         )
                     }
                 }
