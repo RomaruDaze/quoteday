@@ -8,9 +8,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -21,6 +26,33 @@ import com.quoteday.app.ui.theme.LocalAppColors
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
+private val fontProvider = GoogleFont.Provider(
+    providerAuthority = "com.google.android.gms.fonts",
+    providerPackage = "com.google.android.gms",
+    certificates = R.array.com_google_android_gms_fonts_certs,
+)
+
+private val LoraFontFamily = FontFamily(
+    Font(
+        googleFont = GoogleFont("Lora"),
+        fontProvider = fontProvider,
+        weight = FontWeight.Normal,
+        style = FontStyle.Italic,
+    ),
+    Font(
+        googleFont = GoogleFont("Lora"),
+        fontProvider = fontProvider,
+        weight = FontWeight.Normal,
+        style = FontStyle.Normal,
+    ),
+    Font(
+        googleFont = GoogleFont("Lora"),
+        fontProvider = fontProvider,
+        weight = FontWeight.SemiBold,
+        style = FontStyle.Italic,
+    ),
+)
 
 @Composable
 fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
@@ -102,7 +134,9 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
                         Spacer(Modifier.height(12.dp))
                         Text(
                             text = "— ${quote.author}",
-                            style = MaterialTheme.typography.labelLarge,
+                            fontFamily = LoraFontFamily,
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 14.sp,
                             color = colors.accentWarm,
                             textAlign = TextAlign.End,
                             modifier = Modifier.fillMaxWidth(),
@@ -119,7 +153,7 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
 private fun AutoSizeText(
     text: String,
     modifier: Modifier = Modifier,
-    color: androidx.compose.ui.graphics.Color,
+    color: Color,
     minFontSize: Float = 14f,
     maxFontSize: Float = 52f,
 ) {
@@ -130,8 +164,9 @@ private fun AutoSizeText(
         text = text,
         modifier = modifier.drawWithContent { if (readyToDraw) drawContent() },
         color = color,
-        fontSize = fontSize.sp,
+        fontFamily = LoraFontFamily,
         fontStyle = FontStyle.Italic,
+        fontSize = fontSize.sp,
         lineHeight = (fontSize * 1.35f).sp,
         overflow = TextOverflow.Clip,
         softWrap = true,
