@@ -25,6 +25,7 @@ class BillingRepository(
     private val context: Context,
     private val scope: CoroutineScope,
     private val onPurchaseSuccess: suspend () -> Unit,
+    private val onProductPrice: ((String) -> Unit)? = null,
 ) {
     companion object {
         const val PRODUCT_ID = "quoteday_premium"
