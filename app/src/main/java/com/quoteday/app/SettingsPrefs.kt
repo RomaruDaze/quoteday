@@ -8,6 +8,8 @@ object SettingsPrefs {
     private const val KEY_NOTIF_HOUR = "notif_hour"
     private const val KEY_NOTIF_MINUTE = "notif_minute"
     private const val KEY_UID = "uid"
+    private const val KEY_TODAY_DATE = "today_date"
+    private const val KEY_TODAY_QUOTE_ID = "today_quote_id"
 
     fun isNotificationEnabled(context: Context): Boolean =
         prefs(context).getBoolean(KEY_NOTIF_ENABLED, true)
