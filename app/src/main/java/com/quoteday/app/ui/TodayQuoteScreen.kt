@@ -1,5 +1,7 @@
 package com.quoteday.app.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,75 +48,90 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(16.dp))
 
-        if (quote == null) {
-            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "“",
-                        fontSize = 64.sp,
-                        color = colors.accentMustard.copy(alpha = 0.35f),
-                        fontWeight = FontWeight.Light,
-                        lineHeight = 56.sp,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        text = "No quotes yet",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = colors.textSecondary,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = "add a quote to see today's pick",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.textMuted,
-                        letterSpacing = 1.sp,
-                    )
-                }
-            }
-        } else {
-            OutlinedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
-                border = BorderStroke(1.dp, colors.cardBorder),
-                elevation = CardDefaults.outlinedCardElevation(defaultElevation = 2.dp),
-                shape = RoundedCornerShape(24.dp),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(32.dp),
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_quote),
-                        contentDescription = null,
-                        tint = colors.accentMustard.copy(alpha = 0.4f),
-                        modifier = Modifier.size(32.dp),
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    AutoSizeText(
-                        text = quote.text.replace(". ", ".\n"),
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        color = colors.textPrimary,
-                    )
-                    if (quote.author.isNotBlank()) {
+        Crossfade(
+            targetState = quote,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            animationSpec = tween(400),
+            label = "quoteContent",
+        ) { currentQuote ->
+            if (currentQuote == null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = """,
+                            fontSize = 64.sp,
+                            color = colors.accentMustard.copy(alpha = 0.35f),
+                            fontWeight = FontWeight.Light,
+                            lineHeight = 56.sp,
+                        )
                         Spacer(Modifier.height(12.dp))
                         Text(
-                            text = "— ${quote.author}",
-                            fontFamily = FontFamily.Serif,
-                            fontStyle = FontStyle.Italic,
-                            fontSize = 14.sp,
-                            color = colors.accentWarm,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.fillMaxWidth(),
+                            text = "No quotes yet",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = colors.textSecondary,
                         )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "add a quote to see today's pick",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.textMuted,
+                            letterSpacing = 1.sp,
+                        )
+                    }
+                }
+            } else {
+                OutlinedCard(
+                    modifier = Modifier.fillMaxSize(),
+                    colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+                    border = BorderStroke(1.dp, colors.cardBorder),
+                    elevation = CardDefaults.outlinedCardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(24.dp),
+                ) {
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        val maxTextHeight = maxHeight * 0.6f
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Start,
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_quote),
+                                contentDescription = null,
+                                tint = colors.accentMustard.copy(alpha = 0.4f),
+                                modifier = Modifier.size(32.dp),
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            AutoSizeText(
+                                text = currentQuote.text,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(max = maxTextHeight),
+                                color = colors.textPrimary,
+                            )
+                            if (currentQuote.author.isNotBlank()) {
+                                Spacer(Modifier.height(16.dp))
+                                Text(
+                                    text = "— ${currentQuote.author}",
+                                    fontFamily = FontFamily.Serif,
+                                    fontStyle = FontStyle.Italic,
+                                    fontSize = 14.sp,
+                                    color = colors.accentWarm,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
+
         Spacer(Modifier.height(16.dp))
     }
 }
@@ -125,7 +142,7 @@ private fun AutoSizeText(
     modifier: Modifier = Modifier,
     color: Color,
     minFontSize: Float = 14f,
-    maxFontSize: Float = 52f,
+    maxFontSize: Float = 72f,
 ) {
     var fontSize by remember(text) { mutableFloatStateOf(maxFontSize) }
     var readyToDraw by remember(text) { mutableStateOf(false) }
