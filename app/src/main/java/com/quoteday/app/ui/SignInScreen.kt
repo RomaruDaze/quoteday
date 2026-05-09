@@ -1,15 +1,13 @@
 package com.quoteday.app.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,42 +21,42 @@ fun SignInScreen(onSignInClick: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(brush = colors.background),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 40.dp)
+            modifier = Modifier.padding(horizontal = 40.dp),
         ) {
             Text(
                 text = "QuoteDay",
-                fontSize = 32.sp,
+                style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Medium,
                 color = colors.textPrimary,
-                letterSpacing = 1.5.sp,
+                letterSpacing = 1.sp,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = "your daily words",
-                fontSize = 13.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = colors.textSecondary,
                 letterSpacing = 2.sp,
             )
             Spacer(modifier = Modifier.height(56.dp))
-            Box(
+            OutlinedButton(
+                onClick = onSignInClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(colors.surface)
-                    .border(1.dp, colors.cardBorder, RoundedCornerShape(12.dp))
-                    .clickable(onClick = onSignInClick),
-                contentAlignment = Alignment.Center
+                    .height(52.dp),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, colors.cardBorder),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = colors.surface,
+                    contentColor = colors.textPrimary,
+                ),
             ) {
                 Text(
                     text = "Sign in with Google",
-                    fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = colors.textPrimary,
                     letterSpacing = 0.5.sp,
                     textAlign = TextAlign.Center,
                 )
