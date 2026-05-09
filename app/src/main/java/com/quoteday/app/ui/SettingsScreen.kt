@@ -214,7 +214,43 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "PURCHASE",
+                fontSize = 10.sp,
+                color = SettingsTextMuted,
+                letterSpacing = 2.sp,
+                fontWeight = FontWeight.Medium,
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            SettingsCard(onClick = onRestorePurchases) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 18.dp, vertical = 18.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "Restore Purchase",
+                        fontSize = 14.sp,
+                        color = SettingsTextPrimary,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.2.sp,
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = SettingsTextSecondary,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             Box(
                 modifier = Modifier
