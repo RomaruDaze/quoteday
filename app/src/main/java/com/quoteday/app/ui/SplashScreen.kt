@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
     LaunchedEffect(Unit) {
-        delay(1500L)
+        delay(800L)
         onTimeout()
     }
 
