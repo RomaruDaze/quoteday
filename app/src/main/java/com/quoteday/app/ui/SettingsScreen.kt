@@ -38,7 +38,6 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationHour by viewModel.notificationHour.collectAsState()
     val notificationMinute by viewModel.notificationMinute.collectAsState()
-    val context = LocalContext.current
     var showTimePicker by remember { mutableStateOf(false) }
 
     if (showTimePicker) {
