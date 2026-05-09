@@ -37,6 +37,9 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
         }
     )
 
+    private val _productPrice = MutableStateFlow<String?>(null)
+    val productPrice: StateFlow<String?> = _productPrice.asStateFlow()
+
     private val _currentUser = MutableStateFlow<FirebaseUser?>(auth.currentUser)
     val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
 
