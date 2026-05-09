@@ -767,6 +767,18 @@ private fun JapandiUpgradeDialog(productPrice: String?, onUpgradeClick: () -> Un
                         letterSpacing = 0.3.sp,
                     )
 
+                    if (productPrice != null) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "One-time purchase · $productPrice",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = AccentMustard,
+                            textAlign = TextAlign.Center,
+                            letterSpacing = 0.5.sp,
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(28.dp))
 
                     Box(
