@@ -258,7 +258,7 @@ private fun QuoteEmptyState(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = """,
+                text = "“",
                 fontSize = 64.sp,
                 color = colors.accentMustard.copy(alpha = 0.35f),
                 fontWeight = FontWeight.Light,
@@ -553,7 +553,7 @@ private fun UpgradeDialog(productPrice: String?, onUpgradeClick: () -> Unit, onD
         onDismissRequest = onDismiss,
         icon = {
             Text(
-                text = """,
+                text = "“",
                 fontSize = 48.sp,
                 color = colors.accentMustard.copy(alpha = 0.6f),
                 fontWeight = FontWeight.Light,
