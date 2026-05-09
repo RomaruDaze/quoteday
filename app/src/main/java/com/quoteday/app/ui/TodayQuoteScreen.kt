@@ -136,8 +136,8 @@ private fun AutoSizeText(
         overflow = TextOverflow.Clip,
         softWrap = true,
         onTextLayout = { result ->
-            if (result.didOverflowHeight && fontSize > minFontSize) {
-                fontSize = (fontSize * 0.9f).coerceAtLeast(minFontSize)
+            if ((result.didOverflowHeight || result.didOverflowWidth) && fontSize > minFontSize) {
+                fontSize = (fontSize * 0.85f).coerceAtLeast(minFontSize)
             } else {
                 readyToDraw = true
             }
