@@ -1,14 +1,11 @@
 package com.quoteday.app.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -21,9 +18,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -43,6 +39,7 @@ import com.quoteday.app.ui.QuoteViewModel.Companion.FREE_QUOTE_LIMIT
 import com.quoteday.app.ui.theme.LocalAppColors
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
     val colors = LocalAppColors.current
@@ -55,6 +52,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
     var editingQuote by remember { mutableStateOf<Quote?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Box(
         modifier = Modifier
@@ -62,38 +60,77 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
             .background(brush = colors.background)
     ) {
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
             containerColor = Color.Transparent,
-            contentColor = colors.textPrimary,
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState) { data ->
-                    Snackbar(
-                        snackbarData = data,
-                        containerColor = colors.buttonBackground,
-                        contentColor = colors.buttonContent,
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                }
-            },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
-                JapandiHeader(
-                    onSettingsClick = onSettingsClick,
-                    quoteCount = quotes.size,
-                    isPremium = isPremium,
+                TopAppBar(
+                    title = {
+                        Column {
+                            Text(
+                                text = "QuoteDay",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Medium,
+                                color = colors.textPrimary,
+                                letterSpacing = 0.5.sp,
+                            )
+                            if (!isPremium) {
+                                Text(
+                                    text = "${ quotes.size } / $FREE_QUOTE_LIMIT quotes",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (quotes.size >= FREE_QUOTE_LIMIT)
+                                        colors.deleteRed.copy(alpha = 0.8f)
+                                    else
+                                        colors.accentMustard,
+                                )
+                            }
+                        }
+                    },
+                    navigationIcon = {
+                        Image(
+                            painter = painterResource(R.drawable.ic_logo),
+                            contentDescription = "QuoteDay logo",
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .size(40.dp),
+                        )
+                    },
+                    actions = {
+                        IconButton(onClick = onSettingsClick) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
+                                tint = colors.accentWarm,
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = colors.surface,
+                        scrolledContainerColor = colors.surface,
+                    ),
+                    scrollBehavior = scrollBehavior,
                 )
             },
             floatingActionButton = {
-                JapandiFab(
-                    limitReached = limitReached,
+                FloatingActionButton(
                     onClick = {
                         if (limitReached) viewModel.triggerUpgradePrompt()
                         else showDialog = true
-                    }
-                )
+                    },
+                    containerColor = colors.buttonBackground,
+                    contentColor = colors.buttonContent,
+                ) {
+                    Icon(
+                        imageVector = if (limitReached) Icons.Default.Lock else Icons.Default.Add,
+                        contentDescription = if (limitReached) "Upgrade to add more" else "Add quote",
+                    )
+                }
             }
         ) { padding ->
             if (quotes.isEmpty()) {
-                JapandiEmptyState(
+                QuoteEmptyState(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
@@ -104,12 +141,12 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
                         .fillMaxSize()
                         .padding(padding),
                     contentPadding = PaddingValues(
-                        start = 20.dp, end = 20.dp, top = 20.dp, bottom = 100.dp
+                        start = 16.dp, end = 16.dp, top = 16.dp, bottom = 88.dp
                     ),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(quotes, key = { it.firestoreId }) { quote ->
-                        JapandiQuoteItem(
+                        QuoteCard(
                             quote = quote,
                             onClick = { editingQuote = quote },
                             onCopied = {
@@ -123,7 +160,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
     }
 
     if (showDialog) {
-        JapandiAddQuoteDialog(
+        AddQuoteDialog(
             onConfirm = { text, author ->
                 viewModel.addQuote(text, author)
                 showDialog = false
@@ -133,7 +170,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
     }
 
     editingQuote?.let { quote ->
-        JapandiEditQuoteDialog(
+        EditQuoteDialog(
             quote = quote,
             onSave = { updated ->
                 viewModel.updateQuote(updated)
@@ -149,7 +186,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
 
     if (showUpgradePrompt) {
         val activity = LocalContext.current as android.app.Activity
-        JapandiUpgradeDialog(
+        UpgradeDialog(
             productPrice = productPrice,
             onUpgradeClick = {
                 viewModel.dismissUpgradePrompt()
@@ -161,163 +198,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
 }
 
 @Composable
-private fun JapandiHeader(onSettingsClick: () -> Unit, quoteCount: Int, isPremium: Boolean) {
-    val colors = LocalAppColors.current
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colors.surface)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(start = 20.dp, end = 8.dp, top = 18.dp, bottom = 18.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_logo),
-                contentDescription = "QuoteDay logo",
-                modifier = Modifier.size(52.dp)
-            )
-            Spacer(modifier = Modifier.width(14.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "QuoteDay",
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = colors.textPrimary,
-                    letterSpacing = 1.sp,
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "your daily words",
-                    fontSize = 12.sp,
-                    color = colors.textSecondary,
-                    letterSpacing = 1.5.sp,
-                )
-                if (!isPremium) {
-                    Spacer(modifier = Modifier.height(3.dp))
-                    Text(
-                        text = "$quoteCount / $FREE_QUOTE_LIMIT quotes",
-                        fontSize = 10.sp,
-                        color = if (quoteCount >= FREE_QUOTE_LIMIT)
-                            colors.deleteRed.copy(alpha = 0.8f)
-                        else
-                            colors.accentMustard.copy(alpha = 0.7f),
-                        letterSpacing = 0.8.sp,
-                        fontWeight = FontWeight.Medium,
-                    )
-                }
-            }
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
-                    tint = colors.accentWarm,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(colors.cardBorder.copy(alpha = 0.5f))
-                .align(Alignment.BottomCenter)
-        )
-    }
-}
-
-@Composable
-private fun JapandiQuoteItem(quote: Quote, onClick: () -> Unit, onCopied: () -> Unit) {
-    val colors = LocalAppColors.current
-    val clipboard = LocalClipboardManager.current
-    val interactionSource = remember { MutableInteractionSource() }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 1.dp,
-                shape = RoundedCornerShape(12.dp),
-                ambientColor = colors.overlay.copy(alpha = 0.06f),
-                spotColor = colors.overlay.copy(alpha = 0.06f),
-            )
-            .clip(RoundedCornerShape(12.dp))
-            .background(colors.surface)
-            .border(1.dp, colors.cardBorder, RoundedCornerShape(12.dp))
-            .clickable(
-                interactionSource = interactionSource,
-                indication = ripple(color = colors.accentMustard.copy(alpha = 0.12f)),
-                onClick = onClick,
-            )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 18.dp, bottom = 18.dp, end = 4.dp),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_quote),
-                contentDescription = null,
-                tint = colors.accentMustard,
-                modifier = Modifier
-                    .size(20.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = quote.text,
-                    fontSize = 14.sp,
-                    fontStyle = FontStyle.Italic,
-                    color = colors.textPrimary,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = 22.sp,
-                    maxLines = 4,
-                    letterSpacing = 0.2.sp,
-                )
-                if (quote.author.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "— ${quote.author}",
-                        fontSize = 11.sp,
-                        color = colors.accentWarm,
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        letterSpacing = 0.5.sp,
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .align(Alignment.CenterVertically)
-                    .clip(CircleShape)
-                    .clickable {
-                        val copyText = if (quote.author.isNotBlank())
-                            "${quote.text} — ${quote.author}"
-                        else
-                            quote.text
-                        clipboard.setText(AnnotatedString(copyText))
-                        onCopied()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ContentCopy,
-                    contentDescription = "Copy",
-                    tint = colors.textMuted,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun JapandiEmptyState(modifier: Modifier = Modifier) {
+private fun QuoteEmptyState(modifier: Modifier = Modifier) {
     val colors = LocalAppColors.current
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Column(
@@ -331,19 +212,17 @@ private fun JapandiEmptyState(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Light,
                 lineHeight = 56.sp,
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "No quotes yet",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
+                style = MaterialTheme.typography.titleMedium,
                 color = colors.textSecondary,
                 textAlign = TextAlign.Center,
-                letterSpacing = 0.8.sp,
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "tap  +  to begin",
-                fontSize = 13.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = colors.textSecondary,
                 textAlign = TextAlign.Center,
                 letterSpacing = 1.5.sp,
@@ -353,127 +232,151 @@ private fun JapandiEmptyState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun JapandiFab(limitReached: Boolean, onClick: () -> Unit) {
+private fun QuoteCard(quote: Quote, onClick: () -> Unit, onCopied: () -> Unit) {
     val colors = LocalAppColors.current
-    Box(
-        modifier = Modifier
-            .padding(bottom = 28.dp, end = 8.dp)
-            .size(56.dp)
-            .shadow(
-                elevation = 4.dp,
-                shape = CircleShape,
-                ambientColor = colors.overlay.copy(alpha = 0.25f),
-                spotColor = colors.overlay.copy(alpha = 0.25f),
-            )
-            .clip(CircleShape)
-            .background(colors.buttonBackground)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+    val clipboard = LocalClipboardManager.current
+
+    OutlinedCard(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+        border = BorderStroke(1.dp, colors.cardBorder),
+        elevation = CardDefaults.outlinedCardElevation(defaultElevation = 1.dp),
     ) {
-        Icon(
-            imageVector = if (limitReached) Icons.Default.Lock else Icons.Default.Add,
-            contentDescription = if (limitReached) "Upgrade to add more" else "Add quote",
-            tint = colors.buttonContent,
-            modifier = Modifier.size(22.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_quote),
+                contentDescription = null,
+                tint = colors.accentMustard,
+                modifier = Modifier.size(18.dp),
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = quote.text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontStyle = FontStyle.Italic,
+                    color = colors.textPrimary,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 4,
+                )
+                if (quote.author.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "— ${quote.author}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colors.accentWarm,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            IconButton(
+                onClick = {
+                    val copyText = if (quote.author.isNotBlank())
+                        "${quote.text} — ${quote.author}"
+                    else
+                        quote.text
+                    clipboard.setText(AnnotatedString(copyText))
+                    onCopied()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ContentCopy,
+                    contentDescription = "Copy",
+                    tint = colors.textMuted,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
     }
 }
 
 @Composable
-private fun JapandiAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss: () -> Unit) {
+private fun AddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss: () -> Unit) {
     val colors = LocalAppColors.current
     var text by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     val canConfirm = text.isNotBlank()
 
     val fieldColors = OutlinedTextFieldDefaults.colors(
-        focusedTextColor = colors.textPrimary,
-        unfocusedTextColor = colors.textPrimary,
-        cursorColor = colors.accentMustard,
         focusedBorderColor = colors.accentMustard,
-        unfocusedBorderColor = colors.cardBorder,
         focusedLabelColor = colors.accentMustard,
-        unfocusedLabelColor = colors.textMuted,
+        cursorColor = colors.accentMustard,
+        unfocusedBorderColor = colors.cardBorder,
         focusedContainerColor = colors.surface,
         unfocusedContainerColor = colors.surface,
     )
 
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Box(
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .background(colors.overlay.copy(alpha = 0.35f))
-                .clickable(onClick = onDismiss),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = colors.surface,
+            border = BorderStroke(1.dp, colors.cardBorder),
+            tonalElevation = 6.dp,
         ) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        ambientColor = colors.overlay.copy(alpha = 0.12f),
-                        spotColor = colors.overlay.copy(alpha = 0.12f),
-                    )
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(colors.surface)
-                    .border(1.dp, colors.cardBorder, RoundedCornerShape(20.dp))
-                    .clickable(enabled = false, onClick = {})
-            ) {
-                Column(
+            Column(modifier = Modifier.padding(24.dp)) {
+                Text(
+                    text = "New Quote",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = colors.textPrimary,
+                )
+                HorizontalDivider(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 28.dp, vertical = 32.dp)
+                        .padding(top = 8.dp, bottom = 20.dp)
+                        .width(28.dp),
+                    color = colors.accentMustard,
+                    thickness = 2.dp,
+                )
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("Quote") },
+                    minLines = 4,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                    colors = fieldColors,
+                    shape = RoundedCornerShape(10.dp),
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = author,
+                    onValueChange = { author = it },
+                    label = { Text("Author (optional)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                    colors = fieldColors,
+                    shape = RoundedCornerShape(10.dp),
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = "New Quote",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colors.textPrimary,
-                        letterSpacing = 0.8.sp,
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Box(modifier = Modifier.width(28.dp).height(1.dp).background(colors.accentMustard))
-                    Spacer(modifier = Modifier.height(24.dp))
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        label = { Text("Quote", fontSize = 12.sp, letterSpacing = 0.5.sp) },
-                        minLines = 4,
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                        colors = fieldColors,
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    OutlinedTextField(
-                        value = author,
-                        onValueChange = { author = it },
-                        label = { Text("Author (optional)", fontSize = 12.sp, letterSpacing = 0.5.sp) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                        colors = fieldColors,
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    Spacer(modifier = Modifier.height(28.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(if (canConfirm) colors.buttonBackground else colors.cardBorder)
-                            .clickable(enabled = canConfirm, onClick = { onConfirm(text, author) }),
-                        contentAlignment = Alignment.Center
+                    TextButton(onClick = onDismiss) { Text("Cancel") }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = { onConfirm(text, author) },
+                        enabled = canConfirm,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.buttonBackground,
+                            contentColor = colors.buttonContent,
+                        ),
                     ) {
-                        Text(
-                            text = "Add",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = if (canConfirm) colors.buttonContent else colors.textMuted,
-                            letterSpacing = 1.5.sp,
-                        )
+                        Text("Add")
                     }
                 }
             }
@@ -482,7 +385,7 @@ private fun JapandiAddQuoteDialog(onConfirm: (String, String) -> Unit, onDismiss
 }
 
 @Composable
-private fun JapandiEditQuoteDialog(
+private fun EditQuoteDialog(
     quote: Quote,
     onSave: (Quote) -> Unit,
     onDelete: () -> Unit,
@@ -494,116 +397,90 @@ private fun JapandiEditQuoteDialog(
     val canSave = text.isNotBlank()
 
     val fieldColors = OutlinedTextFieldDefaults.colors(
-        focusedTextColor = colors.textPrimary,
-        unfocusedTextColor = colors.textPrimary,
-        cursorColor = colors.accentMustard,
         focusedBorderColor = colors.accentMustard,
-        unfocusedBorderColor = colors.cardBorder,
         focusedLabelColor = colors.accentMustard,
-        unfocusedLabelColor = colors.textMuted,
+        cursorColor = colors.accentMustard,
+        unfocusedBorderColor = colors.cardBorder,
         focusedContainerColor = colors.surface,
         unfocusedContainerColor = colors.surface,
     )
 
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Box(
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .background(colors.overlay.copy(alpha = 0.35f))
-                .clickable(onClick = onDismiss),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = colors.surface,
+            border = BorderStroke(1.dp, colors.cardBorder),
+            tonalElevation = 6.dp,
         ) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        ambientColor = colors.overlay.copy(alpha = 0.12f),
-                        spotColor = colors.overlay.copy(alpha = 0.12f),
-                    )
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(colors.surface)
-                    .border(1.dp, colors.cardBorder, RoundedCornerShape(20.dp))
-                    .clickable(enabled = false, onClick = {})
-            ) {
-                Column(
+            Column(modifier = Modifier.padding(24.dp)) {
+                Text(
+                    text = "Edit Quote",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = colors.textPrimary,
+                )
+                HorizontalDivider(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 28.dp, vertical = 32.dp)
+                        .padding(top = 8.dp, bottom = 20.dp)
+                        .width(28.dp),
+                    color = colors.accentMustard,
+                    thickness = 2.dp,
+                )
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("Quote") },
+                    minLines = 4,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                    colors = fieldColors,
+                    shape = RoundedCornerShape(10.dp),
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = author,
+                    onValueChange = { author = it },
+                    label = { Text("Author (optional)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                    colors = fieldColors,
+                    shape = RoundedCornerShape(10.dp),
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = "Edit Quote",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colors.textPrimary,
-                        letterSpacing = 0.8.sp,
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Box(modifier = Modifier.width(28.dp).height(1.dp).background(colors.accentMustard))
-                    Spacer(modifier = Modifier.height(24.dp))
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        label = { Text("Quote", fontSize = 12.sp, letterSpacing = 0.5.sp) },
-                        minLines = 4,
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                        colors = fieldColors,
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    OutlinedTextField(
-                        value = author,
-                        onValueChange = { author = it },
-                        label = { Text("Author (optional)", fontSize = 12.sp, letterSpacing = 0.5.sp) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                        colors = fieldColors,
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    Spacer(modifier = Modifier.height(28.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    OutlinedButton(
+                        onClick = onDelete,
+                        border = BorderStroke(1.dp, colors.deleteRed.copy(alpha = 0.5f)),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.deleteRed),
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(48.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .border(1.dp, colors.deleteRed.copy(alpha = 0.40f), RoundedCornerShape(10.dp))
-                                .clickable(onClick = onDelete),
-                            contentAlignment = Alignment.Center
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(onClick = onDismiss) { Text("Cancel") }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = { onSave(quote.copy(text = text.trim(), author = author.trim())) },
+                            enabled = canSave,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colors.buttonBackground,
+                                contentColor = colors.buttonContent,
+                            ),
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete",
-                                tint = colors.deleteRed.copy(alpha = 0.75f),
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .weight(2f)
-                                .height(48.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(if (canSave) colors.buttonBackground else colors.cardBorder)
-                                .clickable(
-                                    enabled = canSave,
-                                    onClick = { onSave(quote.copy(text = text.trim(), author = author.trim())) }
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Save",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = if (canSave) colors.buttonContent else colors.textMuted,
-                                letterSpacing = 1.5.sp,
-                            )
+                            Text("Save")
                         }
                     }
                 }
@@ -613,110 +490,62 @@ private fun JapandiEditQuoteDialog(
 }
 
 @Composable
-private fun JapandiUpgradeDialog(productPrice: String?, onUpgradeClick: () -> Unit, onDismiss: () -> Unit) {
+private fun UpgradeDialog(productPrice: String?, onUpgradeClick: () -> Unit, onDismiss: () -> Unit) {
     val colors = LocalAppColors.current
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colors.overlay.copy(alpha = 0.35f))
-                .clickable(onClick = onDismiss),
-            contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(20.dp),
-                        ambientColor = colors.overlay.copy(alpha = 0.12f),
-                        spotColor = colors.overlay.copy(alpha = 0.12f),
-                    )
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(colors.surface)
-                    .border(1.dp, colors.cardBorder, RoundedCornerShape(20.dp))
-                    .clickable(enabled = false, onClick = {})
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 28.dp, vertical = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Text(
+                text = "“",
+                fontSize = 48.sp,
+                color = colors.accentMustard.copy(alpha = 0.6f),
+                fontWeight = FontWeight.Light,
+                lineHeight = 40.sp,
+            )
+        },
+        title = {
+            Text(
+                text = "Unlock Unlimited",
+                textAlign = TextAlign.Center,
+                color = colors.textPrimary,
+            )
+        },
+        text = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "You've reached the $FREE_QUOTE_LIMIT-quote limit. Upgrade once to add as many quotes as you like.",
+                    textAlign = TextAlign.Center,
+                    color = colors.textSecondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                if (productPrice != null) {
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = "“",
-                        fontSize = 52.sp,
-                        color = colors.accentMustard.copy(alpha = 0.5f),
-                        fontWeight = FontWeight.Light,
-                        lineHeight = 44.sp,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Unlock Unlimited",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colors.textPrimary,
-                        letterSpacing = 0.8.sp,
+                        text = "One-time purchase · $productPrice",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = colors.accentMustard,
                         textAlign = TextAlign.Center,
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Box(modifier = Modifier.width(28.dp).height(1.dp).background(colors.accentMustard))
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "You've reached the $FREE_QUOTE_LIMIT-quote limit.\nUpgrade once to add as many quotes as you like.",
-                        fontSize = 13.sp,
-                        color = colors.textSecondary,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 20.sp,
-                        letterSpacing = 0.3.sp,
-                    )
-                    if (productPrice != null) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "One-time purchase · $productPrice",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = colors.accentMustard,
-                            textAlign = TextAlign.Center,
-                            letterSpacing = 0.5.sp,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(28.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(colors.buttonBackground)
-                            .clickable(onClick = onUpgradeClick),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Upgrade",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = colors.buttonContent,
-                            letterSpacing = 1.5.sp,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                            .clickable(onClick = onDismiss),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Not now",
-                            fontSize = 13.sp,
-                            color = colors.textMuted,
-                            letterSpacing = 1.sp,
-                        )
-                    }
                 }
             }
-        }
-    }
+        },
+        confirmButton = {
+            Button(
+                onClick = onUpgradeClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colors.buttonBackground,
+                    contentColor = colors.buttonContent,
+                ),
+            ) {
+                Text("Upgrade")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Not now") }
+        },
+        containerColor = colors.surface,
+        iconContentColor = colors.accentMustard,
+        titleContentColor = colors.textPrimary,
+        textContentColor = colors.textSecondary,
+    )
 }
