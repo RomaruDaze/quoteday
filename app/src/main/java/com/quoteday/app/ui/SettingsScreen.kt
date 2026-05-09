@@ -94,7 +94,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SettingsSurface)
+            .background(brush = SettingsBackground)
     ) {
         Box(modifier = Modifier.fillMaxWidth().background(SettingsSurface)) {
             Row(
