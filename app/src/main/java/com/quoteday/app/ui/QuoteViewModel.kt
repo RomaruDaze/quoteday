@@ -34,7 +34,8 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
         scope = viewModelScope,
         onPurchaseSuccess = {
             auth.currentUser?.uid?.let { FirestoreRepository.setPremium(it) }
-        }
+        },
+        onProductPrice = { _productPrice.value = it }
     )
 
     private val _productPrice = MutableStateFlow<String?>(null)
