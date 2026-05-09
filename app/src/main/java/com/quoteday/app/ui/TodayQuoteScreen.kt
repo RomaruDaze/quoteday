@@ -4,13 +4,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quoteday.app.R
@@ -77,7 +79,7 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
                 elevation = CardDefaults.outlinedCardElevation(defaultElevation = 2.dp),
                 shape = RoundedCornerShape(24.dp),
             ) {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(32.dp),
@@ -86,27 +88,24 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
                         painter = painterResource(R.drawable.ic_quote),
                         contentDescription = null,
                         tint = colors.accentMustard.copy(alpha = 0.4f),
-                        modifier = Modifier
-                            .size(36.dp)
-                            .align(Alignment.TopStart),
+                        modifier = Modifier.size(32.dp),
                     )
-                    Text(
+                    Spacer(Modifier.height(12.dp))
+                    AutoSizeText(
                         text = quote.text,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
                         color = colors.textPrimary,
-                        lineHeight = 28.sp,
-                        modifier = Modifier.align(Alignment.Center),
                     )
                     if (quote.author.isNotBlank()) {
+                        Spacer(Modifier.height(12.dp))
                         Text(
                             text = "— ${quote.author}",
                             style = MaterialTheme.typography.labelLarge,
                             color = colors.accentWarm,
                             textAlign = TextAlign.End,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomEnd),
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                 }
@@ -114,4 +113,34 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
         }
         Spacer(Modifier.height(16.dp))
     }
+}
+
+@Composable
+private fun AutoSizeText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: androidx.compose.ui.graphics.Color,
+    minFontSize: Float = 14f,
+    maxFontSize: Float = 52f,
+) {
+    var fontSize by remember(text) { mutableFloatStateOf(maxFontSize) }
+    var readyToDraw by remember(text) { mutableStateOf(false) }
+
+    Text(
+        text = text,
+        modifier = modifier.drawWithContent { if (readyToDraw) drawContent() },
+        color = color,
+        fontSize = fontSize.sp,
+        fontStyle = FontStyle.Italic,
+        lineHeight = (fontSize * 1.35f).sp,
+        overflow = TextOverflow.Clip,
+        softWrap = true,
+        onTextLayout = { result ->
+            if (result.didOverflowHeight && fontSize > minFontSize) {
+                fontSize = (fontSize * 0.9f).coerceAtLeast(minFontSize)
+            } else {
+                readyToDraw = true
+            }
+        },
+    )
 }
