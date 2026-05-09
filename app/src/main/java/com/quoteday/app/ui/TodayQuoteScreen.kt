@@ -35,19 +35,19 @@ private val fontProvider = GoogleFont.Provider(
 
 private val LoraFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("Lora"),
+        googleFont = GoogleFont("Tinos"),
         fontProvider = fontProvider,
         weight = FontWeight.Normal,
         style = FontStyle.Italic,
     ),
     Font(
-        googleFont = GoogleFont("Lora"),
+        googleFont = GoogleFont("Tinos"),
         fontProvider = fontProvider,
         weight = FontWeight.Normal,
         style = FontStyle.Normal,
     ),
     Font(
-        googleFont = GoogleFont("Lora"),
+        googleFont = GoogleFont("Tinos"),
         fontProvider = fontProvider,
         weight = FontWeight.SemiBold,
         style = FontStyle.Italic,
