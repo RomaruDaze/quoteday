@@ -30,7 +30,7 @@ fun SignInScreen(onSignInClick: () -> Unit) {
     ) {
         // Decorative background quote mark
         Text(
-            text = """,
+            text = "\u201C",
             fontSize = 220.sp,
             lineHeight = 180.sp,
             color = colors.accentMustard.copy(alpha = 0.07f),

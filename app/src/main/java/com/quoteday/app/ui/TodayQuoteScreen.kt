@@ -60,7 +60,7 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = """,
+                            text = "\u201C",
                             fontSize = 64.sp,
                             color = colors.accentMustard.copy(alpha = 0.35f),
                             fontWeight = FontWeight.Light,
