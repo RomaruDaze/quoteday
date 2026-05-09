@@ -33,7 +33,7 @@ private val fontProvider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs,
 )
 
-private val LoraFontFamily = FontFamily(
+private val TinosFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Tinos"),
         fontProvider = fontProvider,
@@ -134,7 +134,7 @@ fun TodayQuoteScreen(quote: Quote?, modifier: Modifier = Modifier) {
                         Spacer(Modifier.height(12.dp))
                         Text(
                             text = "— ${quote.author}",
-                            fontFamily = LoraFontFamily,
+                            fontFamily = TinosFontFamily,
                             fontStyle = FontStyle.Italic,
                             fontSize = 14.sp,
                             color = colors.accentWarm,
@@ -164,7 +164,7 @@ private fun AutoSizeText(
         text = text,
         modifier = modifier.drawWithContent { if (readyToDraw) drawContent() },
         color = color,
-        fontFamily = LoraFontFamily,
+        fontFamily = TinosFontFamily,
         fontStyle = FontStyle.Italic,
         fontSize = fontSize.sp,
         lineHeight = (fontSize * 1.35f).sp,
