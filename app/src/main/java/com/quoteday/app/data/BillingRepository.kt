@@ -99,6 +99,8 @@ class BillingRepository(
         }
     }
 
+    fun triggerRestore() { scope.launch { restorePurchases() } }
+
     private suspend fun restorePurchases() {
         if (!ensureConnected()) return
         val params = QueryPurchasesParams.newBuilder()
