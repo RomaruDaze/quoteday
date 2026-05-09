@@ -101,7 +101,7 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
             },
             floatingActionButton = {
                 JapandiFab(
-                    enabled = !limitReached,
+                    limitReached = limitReached,
                     onClick = {
                         if (limitReached) viewModel.triggerUpgradePrompt()
                         else showDialog = true
