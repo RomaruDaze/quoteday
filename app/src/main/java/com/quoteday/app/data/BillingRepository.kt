@@ -93,7 +93,10 @@ class BillingRepository(
             )
             .build()
         val result = billingClient?.queryProductDetails(params) ?: return null
-        return result.productDetailsList?.firstOrNull()?.also { cachedProductDetails = it }
+        return result.productDetailsList?.firstOrNull()?.also {
+            cachedProductDetails = it
+            it.oneTimePurchaseOfferDetails?.formattedPrice?.let { price -> onProductPrice?.invoke(price) }
+        }
     }
 
     private suspend fun restorePurchases() {
