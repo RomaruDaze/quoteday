@@ -67,6 +67,30 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
             initialValue = false
         )
 
+    val todayQuote: StateFlow<Quote?> = quotes
+        .map { list ->
+            if (list.isEmpty()) return@map null
+            val today = LocalDate.now().toString()
+            val storedDate = SettingsPrefs.getTodayQuoteDate(getApplication())
+            val storedId = SettingsPrefs.getTodayQuoteId(getApplication())
+            if (storedDate == today && storedId != null) {
+                list.find { it.firestoreId == storedId } ?: run {
+                    val pick = list.random()
+                    SettingsPrefs.setTodayQuote(getApplication(), today, pick.firestoreId)
+                    pick
+                }
+            } else {
+                val pick = list.random()
+                SettingsPrefs.setTodayQuote(getApplication(), today, pick.firestoreId)
+                pick
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
+        )
+
     val limitReached: StateFlow<Boolean> = combine(quotes, isPremium) { q, premium ->
         !premium && q.size >= FREE_QUOTE_LIMIT
     }.stateIn(
