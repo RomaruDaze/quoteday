@@ -1,16 +1,14 @@
 package com.quoteday.app
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.quoteday.app.notification.QuoteDailyWorker
-import java.time.Duration
+import android.content.Intent
+import android.os.Build
+import com.quoteday.app.notification.QuoteAlarmReceiver
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.concurrent.TimeUnit
-
-private const val WORK_NAME = "daily_quote_work"
+import java.time.ZoneId
 
 fun Context.scheduleDailyQuote() {
     val hour = SettingsPrefs.getNotificationHour(this)
@@ -18,22 +16,31 @@ fun Context.scheduleDailyQuote() {
 
     val now = LocalDateTime.now()
     val targetTime = LocalTime.of(hour, minute)
-    val target = now.toLocalDate().atTime(targetTime)
+    var target = now.toLocalDate().atTime(targetTime)
+    if (!now.toLocalTime().isBefore(targetTime)) {
+        target = target.plusDays(1)
+    }
 
-    val next = if (now.toLocalTime().isAfter(targetTime)) target.plusDays(1) else target
-    val initialDelay = Duration.between(now, next).toMinutes()
+    val triggerAtMillis = target.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-    val request = PeriodicWorkRequestBuilder<QuoteDailyWorker>(1, TimeUnit.DAYS)
-        .setInitialDelay(initialDelay, TimeUnit.MINUTES)
-        .build()
+    val pending = alarmPendingIntent(this)
+    val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-        WORK_NAME,
-        ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-        request
-    )
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pending)
+    } else {
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pending)
+    }
 }
 
 fun Context.cancelDailyQuote() {
-    WorkManager.getInstance(this).cancelUniqueWork(WORK_NAME)
+    val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    alarmManager.cancel(alarmPendingIntent(this))
 }
+
+private fun alarmPendingIntent(context: Context): PendingIntent =
+    PendingIntent.getBroadcast(
+        context, 0,
+        Intent(context, QuoteAlarmReceiver::class.java),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
