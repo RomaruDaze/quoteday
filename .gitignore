@@ -33,5 +33,8 @@ google-services.json
 .DS_Store
 Thumbs.db
 
+# Firebase App Distribution
+testers.csv
+
 # Stray Gradle JVM dirs
 "java.home":*
