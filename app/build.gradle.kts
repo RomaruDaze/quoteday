@@ -11,7 +11,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.quoteday.app"
+        applicationId = "com.romarudaze.quoteday"
         minSdk = 26
         targetSdk = 35
         versionCode = 3
