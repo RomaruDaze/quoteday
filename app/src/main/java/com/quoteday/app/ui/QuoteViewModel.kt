@@ -70,18 +70,17 @@ class QuoteViewModel(application: Application) : AndroidViewModel(application) {
     val todayQuote: StateFlow<Quote?> = quotes
         .map { list ->
             if (list.isEmpty()) return@map null
-            val today = LocalDate.now().toString()
-            val storedDate = SettingsPrefs.getTodayQuoteDate(getApplication())
             val storedId = SettingsPrefs.getTodayQuoteId(getApplication())
-            if (storedDate == today && storedId != null) {
+            if (storedId != null) {
+                // Show the quote last selected by the daily worker (same one in the notification)
                 list.find { it.firestoreId == storedId } ?: run {
                     val pick = list.random()
-                    SettingsPrefs.setTodayQuote(getApplication(), today, pick.firestoreId)
+                    SettingsPrefs.setTodayQuote(getApplication(), LocalDate.now().toString(), pick.firestoreId)
                     pick
                 }
             } else {
                 val pick = list.random()
-                SettingsPrefs.setTodayQuote(getApplication(), today, pick.firestoreId)
+                SettingsPrefs.setTodayQuote(getApplication(), LocalDate.now().toString(), pick.firestoreId)
                 pick
             }
         }
