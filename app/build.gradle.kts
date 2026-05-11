@@ -18,9 +18,19 @@ android {
         versionName = "1.2"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("quoteday-upload.jks")
+            storePassword = "quoteday2024"
+            keyAlias = "quoteday"
+            keyPassword = "quoteday2024"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
