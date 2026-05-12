@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.quoteday.app.BuildConfig
 import com.quoteday.app.ui.theme.LocalAppColors
+import com.quoteday.app.ui.QuoteViewModel.Companion.FREE_QUOTE_LIMIT
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
