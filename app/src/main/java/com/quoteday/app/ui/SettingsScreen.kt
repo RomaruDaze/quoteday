@@ -226,19 +226,6 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
-
-                OutlinedButton(
-                    onClick = { viewModel.testNotification() },
-                    modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, colors.cardBorder),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = colors.textSecondary,
-                    ),
-                ) {
-                    Text("Send Test Notification", letterSpacing = 0.5.sp)
-                }
-
                 Spacer(modifier = Modifier.height(8.dp))
                 SettingsSectionLabel("ABOUT")
 
