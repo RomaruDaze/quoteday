@@ -53,7 +53,6 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
     val todayQuote by viewModel.todayQuote.collectAsState()
     val isPremium by viewModel.isPremium.collectAsState()
     val limitReached by viewModel.limitReached.collectAsState()
-    val showUpgradePrompt by viewModel.showUpgradePrompt.collectAsState()
     var selectedTab by remember { mutableStateOf(Tab.Today) }
     var showDialog by remember { mutableStateOf(false) }
     var editingQuote by remember { mutableStateOf<Quote?>(null) }
