@@ -234,7 +234,20 @@ fun SettingsScreen(
                         },
                         trailingContent = {
                             if (isPremium) {
-                                Text("★", style = MaterialTheme.typography.titleMedium, color = colors.accentMustard)
+                                Surface(
+                                    shape = RoundedCornerShape(50),
+                                    color = colors.accentMustard.copy(alpha = 0.15f),
+                                    border = BorderStroke(1.dp, colors.accentMustard.copy(alpha = 0.45f)),
+                                ) {
+                                    Text(
+                                        text = "PREMIUM",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = colors.accentMustard,
+                                        fontWeight = FontWeight.SemiBold,
+                                        letterSpacing = 1.sp,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                    )
+                                }
                             } else {
                                 OutlinedButton(
                                     onClick = onUpgradeClick,
