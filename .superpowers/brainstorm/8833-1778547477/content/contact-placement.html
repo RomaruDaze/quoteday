@@ -1,0 +1,107 @@
+<h2>Where should "Contact Us" live?</h2>
+<p class="subtitle">Three options for placing the Contact Us row in the settings screen.</p>
+
+<style>
+.screen-mock {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 16px;
+  overflow: hidden;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+.section-label {
+  color: #888;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  padding: 10px 16px 4px;
+  text-transform: uppercase;
+}
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid #222;
+}
+.list-row:first-child { border-top: none; }
+.row-text { color: #f5f0e8; font-weight: 500; }
+.row-sub  { color: #888; font-size: 11px; margin-top: 2px; }
+.chevron  { color: #555; font-size: 14px; }
+.card-wrap { border: 1px solid #333; border-radius: 12px; overflow: hidden; margin: 0 12px 8px; }
+.highlight-row { background: #1c1a14; }
+</style>
+
+<div class="options">
+
+  <!-- Option A -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Inside ABOUT section</h3>
+      <p>Contact Us sits above Version in the existing ABOUT card — no new section needed.</p>
+      <div class="screen-mock" style="margin-top:10px;">
+        <div class="section-label">About</div>
+        <div class="card-wrap">
+          <div class="list-row highlight-row">
+            <div><div class="row-text">Contact Us</div></div>
+            <div class="chevron">›</div>
+          </div>
+          <div class="list-row">
+            <div><div class="row-text">Version</div></div>
+            <div style="color:#555;font-size:12px;">1.0.0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>New SUPPORT section</h3>
+      <p>A dedicated SUPPORT section above ABOUT, just for Contact Us. Clean separation.</p>
+      <div class="screen-mock" style="margin-top:10px;">
+        <div class="section-label">Support</div>
+        <div class="card-wrap">
+          <div class="list-row highlight-row">
+            <div><div class="row-text">Contact Us</div></div>
+            <div class="chevron">›</div>
+          </div>
+        </div>
+        <div class="section-label">About</div>
+        <div class="card-wrap">
+          <div class="list-row">
+            <div><div class="row-text">Version</div></div>
+            <div style="color:#555;font-size:12px;">1.0.0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Standalone button at the bottom</h3>
+      <p>A full-width outlined button below all cards — same style as the old Test Notification button was.</p>
+      <div class="screen-mock" style="margin-top:10px;">
+        <div class="section-label">About</div>
+        <div class="card-wrap">
+          <div class="list-row">
+            <div><div class="row-text">Version</div></div>
+            <div style="color:#555;font-size:12px;">1.0.0</div>
+          </div>
+        </div>
+        <div style="padding: 8px 12px 12px;">
+          <div class="highlight-row" style="border:1px solid #444; border-radius:8px; padding:10px 16px; text-align:center; color:#bbb;">
+            Contact Us
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
