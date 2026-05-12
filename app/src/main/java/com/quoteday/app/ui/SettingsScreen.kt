@@ -133,7 +133,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
                         trailingContent = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                             ) {
                                 OutlinedButton(
                                     onClick = { viewModel.testNotification() },
