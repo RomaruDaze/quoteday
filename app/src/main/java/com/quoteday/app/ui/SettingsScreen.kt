@@ -232,6 +232,43 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
+                SettingsSectionLabel("SUPPORT")
+
+                OutlinedCard(
+                    onClick = {
+                        try {
+                            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                data = Uri.parse("mailto:")
+                                putExtra(Intent.EXTRA_EMAIL, arrayOf("romarudazee99@gmail.com"))
+                                putExtra(Intent.EXTRA_SUBJECT, "QuoteDay Support")
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Send email"))
+                        } catch (_: ActivityNotFoundException) { }
+                    },
+                    colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+                    border = BorderStroke(1.dp, colors.cardBorder),
+                ) {
+                    ListItem(
+                        headlineContent = {
+                            Text("Contact Us", fontWeight = FontWeight.Medium)
+                        },
+                        supportingContent = { Text("Get help or send feedback") },
+                        trailingContent = {
+                            Icon(
+                                imageVector = Icons.Default.ChevronRight,
+                                contentDescription = null,
+                                tint = colors.textSecondary,
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent,
+                            headlineColor = colors.textPrimary,
+                            supportingColor = colors.textSecondary,
+                        ),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
                 SettingsSectionLabel("ABOUT")
 
                 OutlinedCard(
