@@ -97,19 +97,11 @@ fun SettingsScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        Column {
-                            Text(
-                                text = "Settings",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = colors.textPrimary,
-                            )
-                            Text(
-                                text = if (isPremium) "★ PREMIUM" else "LITE",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (isPremium) colors.accentMustard else colors.textMuted,
-                                letterSpacing = 1.sp,
-                            )
-                        }
+                        Text(
+                            text = "Settings",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = colors.textPrimary,
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
