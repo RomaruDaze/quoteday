@@ -242,7 +242,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
                                 putExtra(Intent.EXTRA_EMAIL, arrayOf("romarudazee99@gmail.com"))
                                 putExtra(Intent.EXTRA_SUBJECT, "QuoteDay Support")
                             }
-                            context.startActivity(Intent.createChooser(intent, "Send email"))
+                            context.startActivity(intent)
                         } catch (_: ActivityNotFoundException) { }
                     },
                     colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
