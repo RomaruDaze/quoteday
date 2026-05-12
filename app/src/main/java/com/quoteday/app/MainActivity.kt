@@ -56,6 +56,7 @@ class MainActivity : ComponentActivity() {
             requestPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
 
+        val activity = this
         setContent {
             QuoteDayTheme {
                 val currentUser by viewModel.currentUser.collectAsState()
