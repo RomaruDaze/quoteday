@@ -337,16 +337,12 @@ if (splashVisible) {
 }
 ```
 
-- [ ] **Step 5: Add the missing imports to `MainActivity.kt`**
+- [ ] **Step 5: Add the missing import to `MainActivity.kt`**
 
-Add to the import block:
+`collectAsState` and `getValue` are already imported. Add only:
 ```kotlin
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import com.quoteday.app.ui.UpgradeDialog
 ```
-
-(Some of these may already be present — only add what's missing.)
 
 - [ ] **Step 6: Full build to verify**
 
