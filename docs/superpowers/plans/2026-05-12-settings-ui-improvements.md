@@ -54,13 +54,7 @@ trailingContent = {
 },
 ```
 
-Add the missing import at the top of the file:
-```kotlin
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
-```
-
-(The `Row`, `Arrangement`, `Spacer`, `BorderStroke`, `OutlinedButton`, `ButtonDefaults`, `Text` imports are already present.)
+`Row`, `Arrangement`, `PaddingValues`, `height`, `BorderStroke`, `OutlinedButton`, `ButtonDefaults`, `Text` are all already imported via the existing wildcard imports — no new imports needed for this step.
 
 - [ ] **Step 2: Remove the standalone OutlinedButton**
 
