@@ -236,17 +236,6 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
         )
     }
 
-    if (showUpgradePrompt) {
-        val activity = LocalContext.current as android.app.Activity
-        UpgradeDialog(
-            productPrice = productPrice,
-            onUpgradeClick = {
-                viewModel.dismissUpgradePrompt()
-                viewModel.launchPurchase(activity)
-            },
-            onDismiss = { viewModel.dismissUpgradePrompt() }
-        )
-    }
 }
 
 @Composable
