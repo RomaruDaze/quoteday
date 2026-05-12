@@ -87,7 +87,6 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (showUpgradePrompt) {
-                        val activity = LocalContext.current as android.app.Activity
                         UpgradeDialog(
                             productPrice = productPrice,
                             onUpgradeClick = {
