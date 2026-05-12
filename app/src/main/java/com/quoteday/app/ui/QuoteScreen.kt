@@ -73,26 +73,14 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
             topBar = {
                 TopAppBar(
                     title = {
-                        Column {
-                            Text(
-                                text = "QuoteDay",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontFamily = FontFamily.Serif,
-                                fontWeight = FontWeight.Medium,
-                                color = colors.textPrimary,
-                                letterSpacing = 0.5.sp,
-                            )
-                            if (selectedTab == Tab.Quotes && !isPremium) {
-                                Text(
-                                    text = "${quotes.size} / $FREE_QUOTE_LIMIT quotes",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = if (quotes.size >= FREE_QUOTE_LIMIT)
-                                        colors.deleteRed.copy(alpha = 0.8f)
-                                    else
-                                        colors.accentMustard,
-                                )
-                            }
-                        }
+                        Text(
+                            text = "QuoteDay",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontFamily = FontFamily.Serif,
+                            fontWeight = FontWeight.Medium,
+                            color = colors.textPrimary,
+                            letterSpacing = 0.5.sp,
+                        )
                     },
                     navigationIcon = {
                         Image(
