@@ -224,70 +224,45 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 SettingsSectionLabel("PURCHASE")
 
-                if (isPremium) {
-                    OutlinedCard(
-                        colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
-                        border = BorderStroke(1.dp, colors.cardBorder),
-                    ) {
-                        ListItem(
-                            headlineContent = {
-                                Text("Current Plan", fontWeight = FontWeight.Medium)
-                            },
-                            supportingContent = {
-                                Text(
-                                    text = "Premium · Unlimited quotes",
-                                    color = colors.accentMustard,
-                                )
-                            },
-                            trailingContent = {
-                                Text(
-                                    text = "★",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = colors.accentMustard,
-                                )
-                            },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent,
-                                headlineColor = colors.textPrimary,
-                            ),
-                        )
-                    }
-                } else {
-                    OutlinedCard(
-                        colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
-                        border = BorderStroke(1.dp, colors.cardBorder),
-                    ) {
-                        ListItem(
-                            headlineContent = {
-                                Text("Current Plan", fontWeight = FontWeight.Medium)
-                            },
-                            supportingContent = {
+                OutlinedCard(
+                    colors = CardDefaults.outlinedCardColors(containerColor = colors.surface),
+                    border = BorderStroke(1.dp, colors.cardBorder),
+                ) {
+                    ListItem(
+                        headlineContent = {
+                            Text("Current Plan", fontWeight = FontWeight.Medium)
+                        },
+                        supportingContent = {
+                            if (isPremium) {
+                                Text("Premium · Unlimited quotes", color = colors.accentMustard)
+                            } else {
                                 val priceText = if (productPrice != null) " · $productPrice" else ""
                                 Text("Lite · Up to $FREE_QUOTE_LIMIT quotes$priceText")
-                            },
-                            trailingContent = {
+                            }
+                        },
+                        trailingContent = {
+                            if (isPremium) {
+                                Text("★", style = MaterialTheme.typography.titleMedium, color = colors.accentMustard)
+                            } else {
                                 OutlinedButton(
                                     onClick = onUpgradeClick,
                                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
                                     modifier = Modifier.height(32.dp),
-                                    border = BorderStroke(
-                                        1.dp,
-                                        colors.cardBorder,
-                                    ),
+                                    border = BorderStroke(1.dp, colors.cardBorder),
                                     colors = ButtonDefaults.outlinedButtonColors(
                                         contentColor = colors.textSecondary,
                                     ),
                                 ) {
                                     Text("Upgrade", fontSize = 12.sp, letterSpacing = 0.5.sp)
                                 }
-                            },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent,
-                                headlineColor = colors.textPrimary,
-                                supportingColor = colors.textSecondary,
-                            ),
-                        )
-                    }
+                            }
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent,
+                            headlineColor = colors.textPrimary,
+                            supportingColor = if (isPremium) colors.accentMustard else colors.textSecondary,
+                        ),
+                    )
                 }
 
                 OutlinedCard(
