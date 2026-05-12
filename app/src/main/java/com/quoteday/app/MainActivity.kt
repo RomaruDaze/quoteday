@@ -58,6 +58,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             QuoteDayTheme {
                 val currentUser by viewModel.currentUser.collectAsState()
+                val isPremium by viewModel.isPremium.collectAsState()
+                val productPrice by viewModel.productPrice.collectAsState()
+                val showUpgradePrompt by viewModel.showUpgradePrompt.collectAsState()
                 var splashVisible by remember { mutableStateOf(true) }
                 var currentScreen by remember { mutableStateOf(Screen.Quote) }
 
@@ -74,7 +77,22 @@ class MainActivity : ComponentActivity() {
                         Screen.Settings -> SettingsScreen(
                             viewModel = settingsViewModel,
                             onBack = { currentScreen = Screen.Quote },
-                            onRestorePurchases = { viewModel.restorePurchases() }
+                            onRestorePurchases = { viewModel.restorePurchases() },
+                            isPremium = isPremium,
+                            productPrice = productPrice,
+                            onUpgradeClick = { viewModel.triggerUpgradePrompt() },
+                        )
+                    }
+
+                    if (showUpgradePrompt) {
+                        val activity = LocalContext.current as android.app.Activity
+                        UpgradeDialog(
+                            productPrice = productPrice,
+                            onUpgradeClick = {
+                                viewModel.dismissUpgradePrompt()
+                                viewModel.launchPurchase(activity)
+                            },
+                            onDismiss = { viewModel.dismissUpgradePrompt() }
                         )
                     }
                 }
