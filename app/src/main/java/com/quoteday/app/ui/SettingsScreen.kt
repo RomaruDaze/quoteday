@@ -29,6 +29,7 @@ import com.quoteday.app.ui.theme.LocalAppColors
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePurchases: () -> Unit) {
     val colors = LocalAppColors.current
+    val context = LocalContext.current
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationHour by viewModel.notificationHour.collectAsState()
     val notificationMinute by viewModel.notificationMinute.collectAsState()
