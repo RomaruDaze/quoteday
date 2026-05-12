@@ -22,6 +22,7 @@ import com.quoteday.app.ui.SettingsScreen
 import com.quoteday.app.ui.SettingsViewModel
 import com.quoteday.app.ui.SignInScreen
 import com.quoteday.app.ui.SplashScreen
+import com.quoteday.app.ui.UpgradeDialog
 import com.quoteday.app.ui.theme.QuoteDayTheme
 
 private enum class Screen { Quote, Settings }
