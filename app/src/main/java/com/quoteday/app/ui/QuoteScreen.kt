@@ -547,7 +547,7 @@ private fun EditQuoteDialog(
 }
 
 @Composable
-private fun UpgradeDialog(productPrice: String?, onUpgradeClick: () -> Unit, onDismiss: () -> Unit) {
+internal fun UpgradeDialog(productPrice: String?, onUpgradeClick: () -> Unit, onDismiss: () -> Unit) {
     val colors = LocalAppColors.current
     AlertDialog(
         onDismissRequest = onDismiss,
