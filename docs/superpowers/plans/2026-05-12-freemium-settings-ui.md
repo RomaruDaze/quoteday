@@ -187,13 +187,11 @@ if (isPremium) {
     }
 }
 
-Spacer(modifier = Modifier.height(8.dp))
-
 OutlinedCard(
     onClick = onRestorePurchases,
 ```
 
-Note: the `Spacer(modifier = Modifier.height(8.dp))` before "Restore Purchase" is new — add it to maintain visual spacing between the plan card and the Restore card.
+Note: no extra `Spacer` is needed between the plan card and "Restore Purchase" — the parent `Column` uses `Arrangement.spacedBy(8.dp)` which provides the gap automatically.
 
 - [ ] **Step 2: Build to verify it compiles**
 
