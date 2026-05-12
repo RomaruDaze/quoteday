@@ -28,7 +28,14 @@ import com.quoteday.app.ui.QuoteViewModel.Companion.FREE_QUOTE_LIMIT
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePurchases: () -> Unit) {
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    onBack: () -> Unit,
+    onRestorePurchases: () -> Unit,
+    isPremium: Boolean,
+    productPrice: String?,
+    onUpgradeClick: () -> Unit,
+) {
     val colors = LocalAppColors.current
     val context = LocalContext.current
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
