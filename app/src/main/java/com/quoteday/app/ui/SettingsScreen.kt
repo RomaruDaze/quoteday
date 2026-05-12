@@ -126,14 +126,36 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onRestorePu
                         },
                         supportingContent = { Text("Receive a quote every day") },
                         trailingContent = {
-                            Switch(
-                                checked = notificationEnabled,
-                                onCheckedChange = { viewModel.setNotificationEnabled(it) },
-                                colors = SwitchDefaults.colors(
-                                    checkedTrackColor = colors.accentMustard,
-                                    checkedThumbColor = colors.surface,
-                                ),
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                OutlinedButton(
+                                    onClick = { viewModel.testNotification() },
+                                    enabled = notificationEnabled,
+                                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                                    modifier = Modifier.height(32.dp),
+                                    border = BorderStroke(
+                                        1.dp,
+                                        if (notificationEnabled) colors.cardBorder
+                                        else colors.cardBorder.copy(alpha = 0.4f),
+                                    ),
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = colors.textSecondary,
+                                        disabledContentColor = colors.textMuted,
+                                    ),
+                                ) {
+                                    Text("Test", fontSize = 12.sp, letterSpacing = 0.5.sp)
+                                }
+                                Switch(
+                                    checked = notificationEnabled,
+                                    onCheckedChange = { viewModel.setNotificationEnabled(it) },
+                                    colors = SwitchDefaults.colors(
+                                        checkedTrackColor = colors.accentMustard,
+                                        checkedThumbColor = colors.surface,
+                                    ),
+                                )
+                            }
                         },
                         colors = ListItemDefaults.colors(
                             containerColor = Color.Transparent,
