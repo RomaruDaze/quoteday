@@ -73,14 +73,48 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(
-                            text = "QuoteDay",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontFamily = FontFamily.Serif,
-                            fontWeight = FontWeight.Medium,
-                            color = colors.textPrimary,
-                            letterSpacing = 0.5.sp,
-                        )
+                        Column {
+                            Text(
+                                text = "QuoteDay",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontFamily = FontFamily.Serif,
+                                fontWeight = FontWeight.Medium,
+                                color = colors.textPrimary,
+                                letterSpacing = 0.5.sp,
+                            )
+                            when {
+                                selectedTab == Tab.Today -> {
+                                    val pillColor = if (isPremium) colors.accentMustard else colors.textMuted
+                                    Surface(
+                                        shape = RoundedCornerShape(50),
+                                        color = pillColor.copy(alpha = 0.12f),
+                                        border = BorderStroke(1.dp, pillColor.copy(alpha = 0.4f)),
+                                    ) {
+                                        Text(
+                                            text = if (isPremium) "PREMIUM" else "LITE",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = pillColor,
+                                            fontWeight = FontWeight.SemiBold,
+                                            letterSpacing = 1.sp,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                        )
+                                    }
+                                }
+                                isPremium -> Text(
+                                    text = "Unlimited",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = colors.accentMustard,
+                                )
+                                else -> Text(
+                                    text = "${quotes.size} / $FREE_QUOTE_LIMIT quotes",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (quotes.size >= FREE_QUOTE_LIMIT)
+                                        colors.deleteRed.copy(alpha = 0.8f)
+                                    else
+                                        colors.accentMustard,
+                                )
+                            }
+                        }
                     },
                     navigationIcon = {
                         Image(
