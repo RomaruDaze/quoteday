@@ -29,6 +29,13 @@ object NotificationHelper {
     fun showQuoteNotification(context: Context, quote: String) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val appIcon = BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
+        val tapIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val tapPendingIntent = PendingIntent.getActivity(
+            context, 0, tapIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setLargeIcon(appIcon)
@@ -36,6 +43,7 @@ object NotificationHelper {
             .setContentText(quote)
             .setStyle(NotificationCompat.BigTextStyle().bigText(quote))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(tapPendingIntent)
             .setAutoCancel(true)
             .build()
         manager.notify(NOTIFICATION_ID, notification)
