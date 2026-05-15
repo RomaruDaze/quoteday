@@ -84,35 +84,46 @@ fun QuoteScreen(viewModel: QuoteViewModel, onSettingsClick: () -> Unit) {
                             )
                             when {
                                 selectedTab == Tab.Today -> {
-                                    val pillColor = if (isPremium) colors.accentMustard else colors.textMuted
-                                    Surface(
-                                        shape = RoundedCornerShape(50),
-                                        color = pillColor.copy(alpha = 0.12f),
-                                        border = BorderStroke(1.dp, pillColor.copy(alpha = 0.4f)),
-                                    ) {
-                                        Text(
-                                            text = if (isPremium) "PREMIUM" else "LITE",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = pillColor,
-                                            fontWeight = FontWeight.SemiBold,
-                                            letterSpacing = 1.sp,
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                        )
-                                    }
+                                    Text(
+                                        text = if (isPremium) "Premium" else "Lite",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = if (isPremium) colors.accentMustard else colors.textMuted,
+                                    )
                                 }
-                                isPremium -> Text(
-                                    text = "Unlimited",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = colors.accentMustard,
-                                )
-                                else -> Text(
-                                    text = "${quotes.size} / $FREE_QUOTE_LIMIT quotes",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = if (quotes.size >= FREE_QUOTE_LIMIT)
+                                isPremium -> Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    Text(
+                                        text = "Premium",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = colors.accentMustard,
+                                    )
+                                    Text(
+                                        text = "Unlimited",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = colors.accentMustard.copy(alpha = 0.7f),
+                                    )
+                                }
+                                else -> Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    val countColor = if (quotes.size >= FREE_QUOTE_LIMIT)
                                         colors.deleteRed.copy(alpha = 0.8f)
                                     else
-                                        colors.accentMustard,
-                                )
+                                        colors.accentMustard
+                                    Text(
+                                        text = "Lite",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = countColor,
+                                    )
+                                    Text(
+                                        text = "${quotes.size}/$FREE_QUOTE_LIMIT",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = countColor.copy(alpha = 0.7f),
+                                    )
+                                }
                             }
                         }
                     },
