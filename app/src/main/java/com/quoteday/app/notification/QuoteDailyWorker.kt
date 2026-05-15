@@ -14,10 +14,14 @@ class QuoteDailyWorker(
 
     override suspend fun doWork(): Result {
         val uid = SettingsPrefs.getUid(context) ?: return Result.success()
+        val today = LocalDate.now().toString()
+        // Guard against WorkManager re-executing an interrupted run: if we already
+        // completed for today, the quote and notification are already set — do nothing.
+        if (SettingsPrefs.getTodayQuoteDate(context) == today) return Result.success()
         val quotes = FirestoreRepository.fetchAll(uid)
         val quote = quotes.randomOrNull() ?: return Result.success()
         // Save first so the main screen shows the same quote as the notification
-        SettingsPrefs.setTodayQuote(context, LocalDate.now().toString(), quote.firestoreId)
+        SettingsPrefs.setTodayQuote(context, today, quote.firestoreId)
         NotificationHelper.showQuoteNotification(context, quote.text)
         return Result.success()
     }
