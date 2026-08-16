@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.quoteday.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.romarudaze.quoteday"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 10
         versionName = "1.4"
     }
