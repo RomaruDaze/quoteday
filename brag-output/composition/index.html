@@ -5,49 +5,302 @@
     <meta name="viewport" content="width=1920, height=1080" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        width: 1920px;
-        height: 1080px;
-        overflow: hidden;
-        background: #0a0a0a;
-      }
-      #root {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-      }
-      #title {
-        color: #f4f4f5;
-        font-size: 72px;
-        font-weight: 600;
-        letter-spacing: -0.03em;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #1c1910; }
+      #root { position: relative; width: 1920px; height: 1080px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+      .clip { position: absolute; inset: 0; }
+      .dark { background: #1c1910; color: #fcf8ec; }
+      .cream { background: linear-gradient(180deg, #ffffff 0%, #fff3a0 60%, #ffde59 100%); color: #1c1910; }
+      .serif { font-family: Georgia, "Times New Roman", serif; }
+
+      /* ---------- deck slide (S1/S2) ---------- */
+      .deck-year { position: absolute; top: 72px; left: 120px; font-size: 30px; letter-spacing: 6px; color: #ca9b38; font-weight: 500; }
+      .deck-page { position: absolute; top: 72px; right: 120px; font-size: 24px; color: #c4a97a; letter-spacing: 2px; }
+      .deck-rule { position: absolute; top: 128px; left: 120px; right: 120px; height: 2px; background: #5a4826; }
+      .deck-h { position: absolute; top: 210px; left: 120px; font-size: 104px; font-weight: 300; letter-spacing: -2px; }
+      .rows { position: absolute; top: 420px; left: 128px; }
+      .row { display: flex; align-items: center; gap: 36px; font-size: 76px; font-weight: 300; height: 118px; }
+      .box { width: 64px; height: 64px; border: 4px solid #ca9b38; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #ca9b38; font-weight: 600; }
+      #row-words { color: #ffde59; font-weight: 500; }
+      #row-words .box { border-color: #ffde59; }
+
+      /* ---------- reveal ---------- */
+      .center-col { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .logo { width: 220px; height: 220px; border-radius: 48px; box-shadow: 0 18px 50px rgba(58, 46, 24, 0.25); }
+      .wordmark { font-size: 132px; font-weight: 500; margin-top: 30px; letter-spacing: 1px; }
+      .stamp { position: absolute; left: 1150px; top: 610px; padding: 18px 36px; border: 8px solid #a8321f; color: #a8321f; font-size: 60px; font-weight: 800; letter-spacing: 6px; border-radius: 12px; transform: rotate(-12deg); background: rgba(255, 252, 240, 0.6); }
+
+      /* ---------- phone (S3/S4) ---------- */
+      .caption { position: absolute; left: 150px; top: 380px; width: 760px; }
+      .cap-num { font-size: 34px; letter-spacing: 6px; color: #6b5e38; font-weight: 600; }
+      .cap-t { font-size: 96px; font-weight: 300; letter-spacing: -2px; margin-top: 18px; line-height: 1.05; }
+      .phone { position: absolute; left: 1060px; top: 50px; width: 500px; height: 980px; border-radius: 64px; background: #1c1910; padding: 14px; box-shadow: 0 40px 90px rgba(58, 46, 24, 0.35); }
+      .screen { position: relative; width: 100%; height: 100%; border-radius: 52px; overflow: hidden; background: linear-gradient(180deg, #fffcf0 0%, #fff3a0 60%, #ffde59 100%); }
+      .status { height: 44px; padding: 14px 34px 0; font-size: 17px; font-weight: 600; color: #1c1910; }
+      .appbar { height: 86px; display: flex; align-items: center; gap: 14px; padding: 0 24px; background: #fffcf0; }
+      .appbar img { width: 46px; height: 46px; }
+      .appbar .t { font-size: 30px; }
+      .appbar .s { font-size: 15px; color: #6b5e38; font-weight: 600; margin-top: 2px; }
+      .appbar .gear { margin-left: auto; font-size: 30px; color: #7a6a45; }
+      .navbar { position: absolute; left: 0; right: 0; bottom: 0; height: 104px; background: #fffcf0; display: flex; justify-content: space-around; align-items: center; font-size: 17px; font-weight: 600; color: #6b5e38; }
+      .nav { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+      .nav .pill { width: 72px; height: 34px; border-radius: 17px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+      .nav.on { color: #8a6618; }
+      .nav.on .pill { background: rgba(181, 137, 42, 0.18); }
+      .list { position: absolute; top: 150px; left: 18px; right: 18px; }
+      .qcard { position: absolute; left: 0; right: 0; background: #fffcf0; border: 2px solid #e8c830; border-radius: 16px; padding: 18px 18px 18px 56px; box-shadow: 0 2px 6px rgba(58, 46, 24, 0.08); }
+      .qcard::before { content: "\201D"; position: absolute; left: 18px; top: 8px; font-family: Georgia, serif; font-size: 48px; color: #b5892a; font-weight: 700; }
+      .qcard .q { font-size: 20px; font-style: italic; line-height: 1.35; color: #1c1910; }
+      .qcard .a { font-size: 16px; color: #6b5e38; font-weight: 600; margin-top: 8px; }
+      .fab { position: absolute; right: 26px; bottom: 128px; width: 76px; height: 76px; border-radius: 22px; background: #3a2e18; color: #fffcf0; font-size: 44px; display: flex; align-items: center; justify-content: center; }
+      .scrim { position: absolute; inset: 0; background: rgba(28, 25, 16, 0.45); }
+      .dialog { position: absolute; left: 22px; right: 22px; top: 230px; background: #fffcf0; border: 2px solid #e8c830; border-radius: 22px; padding: 28px; }
+      .dialog h3 { font-size: 30px; font-weight: 400; color: #1c1910; }
+      .dialog .bar { width: 34px; height: 3px; background: #b5892a; margin: 10px 0 22px; }
+      .field { position: relative; border: 2px solid #e8c830; border-radius: 12px; padding: 22px 16px 14px; margin-bottom: 18px; background: #fffcf0; }
+      .field.focus { border-color: #b5892a; }
+      .field .lbl { position: absolute; top: -12px; left: 12px; padding: 0 6px; background: #fffcf0; font-size: 15px; color: #6b5e38; font-weight: 600; }
+      .field .val { font-size: 22px; color: #1c1910; min-height: 30px; }
+      .field.big .val { min-height: 110px; }
+      .btns { display: flex; justify-content: flex-end; gap: 26px; align-items: center; font-size: 19px; font-weight: 600; }
+      .btns .cancel { color: #6b5e38; }
+      .btns .add { background: #3a2e18; color: #fffcf0; padding: 12px 30px; border-radius: 24px; }
+      .tap { position: absolute; width: 70px; height: 70px; border-radius: 50%; background: rgba(58, 46, 24, 0.25); left: 356px; top: 612px; }
+      .today-date { position: absolute; top: 146px; left: 0; right: 0; text-align: center; font-size: 19px; color: #6b5e38; letter-spacing: 1px; font-weight: 600; }
+      .today-card { position: absolute; top: 196px; left: 30px; right: 30px; bottom: 130px; background: #fffcf0; border: 2px solid #e8c830; border-radius: 30px; padding: 40px 36px; display: flex; flex-direction: column; justify-content: center; }
+      .today-card .glyph { font-family: Georgia, serif; font-size: 70px; color: #b5892a; line-height: 0.6; font-weight: 700; opacity: 0.55; }
+      .today-card .q { font-size: 44px; font-style: italic; line-height: 1.3; margin-top: 18px; color: #1c1910; }
+      .today-card .a { font-size: 21px; font-style: italic; color: #6b5e38; text-align: right; margin-top: 22px; }
+      .notif { position: absolute; top: 18px; left: 16px; right: 16px; background: #ffffff; border-radius: 26px; padding: 18px 20px; display: flex; gap: 14px; box-shadow: 0 16px 40px rgba(28, 25, 16, 0.3); }
+      .notif img { width: 48px; height: 48px; border-radius: 12px; }
+      .notif .h { font-size: 15px; color: #6b5e38; font-weight: 600; }
+      .notif .t { font-size: 19px; font-weight: 700; color: #1c1910; margin-top: 2px; }
+      .notif .b { font-size: 17px; color: #1c1910; margin-top: 3px; line-height: 1.3; }
+
+      /* ---------- metrics (S5) ---------- */
+      .table { position: absolute; top: 330px; left: 120px; right: 120px; }
+      .trow { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #5a4826; padding: 34px 0; font-size: 64px; font-weight: 300; }
+      .trow .v { font-weight: 500; }
+      .trow.hot .v { font-family: Menlo, "SF Mono", Monaco, monospace; color: #ffde59; font-size: 70px; }
+
+      /* ---------- outro (S6) ---------- */
+      .outro-logo { width: 190px; height: 190px; border-radius: 42px; }
+      .tag { font-size: 44px; font-style: italic; color: #6b5e38; margin-top: 10px; }
+      .fine { margin-top: 64px; font-size: 40px; color: #3a2e18; font-weight: 400; letter-spacing: 1px; }
+      .play { margin-top: 18px; font-size: 54px; font-weight: 600; color: #1c1910; padding: 16px 40px; border: 3px solid #1c1910; border-radius: 16px; }
     </style>
   </head>
   <body>
-    <div
-      id="root"
-      data-composition-id="main"
-      data-start="0"
-      data-duration="10"
-      data-width="1920"
-      data-height="1080"
-    >
-      <h1 id="title" class="clip" data-start="0" data-duration="10" data-track-index="0">Title</h1>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="25" data-width="1920" data-height="1080">
+
+      <!-- S1 + S2a: 2016 deck slide -->
+      <div id="s1" class="clip dark" data-start="0" data-duration="7.91" data-track-index="0">
+        <div class="deck-year">2016.</div>
+        <div class="deck-page">SERIES A · CONFIDENTIAL</div>
+        <div class="deck-rule"></div>
+        <div id="s1-h" class="deck-h">Everything got an app.</div>
+        <div class="rows">
+          <div id="row-1" class="row"><div class="box">✓</div>Laundry</div>
+          <div id="row-2" class="row"><div class="box">✓</div>Parking</div>
+          <div id="row-3" class="row"><div class="box">✓</div>Dogs</div>
+          <div id="row-words" class="row"><div class="box"></div>Words</div>
+        </div>
+      </div>
+
+      <!-- S2b: logo + stamp -->
+      <div id="s2" class="clip cream" data-start="7.91" data-duration="1.89" data-track-index="0">
+        <div class="center-col">
+          <img id="s2-logo" class="logo" src="assets/img/ic_logo.png" alt="" />
+          <div id="s2-word" class="wordmark serif">QuoteDay</div>
+        </div>
+        <div id="stamp" class="stamp">SERIES A · CLOSED</div>
+      </div>
+
+      <!-- S3 + S4: the product -->
+      <div id="s3" class="clip cream" data-start="9.8" data-duration="6.8" data-track-index="0">
+        <div id="cap-a" class="caption">
+          <div class="cap-num">01 — CAPTURE</div>
+          <div class="cap-t">Save the words<br />that matter.</div>
+        </div>
+        <div id="cap-b" class="caption">
+          <div class="cap-num">02 — DELIVERY</div>
+          <div class="cap-t">One quote.<br />Every morning.</div>
+        </div>
+        <div class="phone"><div class="screen">
+          <!-- Quotes tab -->
+          <div id="scr-quotes" style="position:absolute;inset:0">
+            <div class="status">9:41</div>
+            <div class="appbar">
+              <img src="assets/img/ic_logo.png" alt="" />
+              <div><div class="t serif">QuoteDay</div><div id="count" class="s">Lite 2/20</div></div>
+              <div class="gear">⚙</div>
+            </div>
+            <div class="list">
+              <div id="card-new" class="qcard" style="top:0"><div class="q">All is well</div><div class="a">— Three Idiots</div></div>
+              <div id="card-old" style="position:absolute;left:0;right:0;top:0">
+                <div class="qcard" style="top:0"><div class="q">Failure is not the opposite of success; it is a stepping stone towards it</div><div class="a">— Sundar Pichai</div></div>
+                <div class="qcard" style="top:168px"><div class="q">If you get tired, learn to rest, not to quit</div><div class="a">— Banksy</div></div>
+              </div>
+            </div>
+            <div class="fab">+</div>
+            <div class="navbar">
+              <div class="nav"><div class="pill">✦</div>Today</div>
+              <div class="nav on"><div class="pill">❞</div>Quotes</div>
+            </div>
+            <div id="dlg" style="position:absolute;inset:0">
+              <div class="scrim"></div>
+              <div class="dialog">
+                <h3>New Quote</h3><div class="bar"></div>
+                <div id="f-quote" class="field big focus"><div class="lbl">Quote</div><div class="val" id="v-quote"></div></div>
+                <div id="f-author" class="field"><div class="lbl">Author (optional)</div><div class="val" id="v-author"></div></div>
+                <div class="btns"><span class="cancel">Cancel</span><span id="btn-add" class="add">Add</span></div>
+              </div>
+              <div id="tap" class="tap"></div>
+            </div>
+          </div>
+          <!-- Today tab -->
+          <div id="scr-today" style="position:absolute;inset:0">
+            <div class="status">7:00</div>
+            <div class="appbar">
+              <img src="assets/img/ic_logo.png" alt="" />
+              <div><div class="t serif">QuoteDay</div><div class="s">Lite</div></div>
+              <div class="gear">⚙</div>
+            </div>
+            <div class="today-date">Thursday, September 17</div>
+            <div class="today-card">
+              <div class="glyph">❞</div>
+              <div id="today-q" class="q serif">In the middle of every difficulty lies opportunity.</div>
+              <div id="today-a" class="a serif">— Albert Einstein</div>
+            </div>
+            <div class="navbar">
+              <div class="nav on"><div class="pill">✦</div>Today</div>
+              <div class="nav"><div class="pill">❞</div>Quotes</div>
+            </div>
+            <div id="notif" class="notif">
+              <img src="assets/img/ic_logo.png" alt="" />
+              <div>
+                <div class="h">QuoteDay · now</div>
+                <div class="t">Quote of the Day</div>
+                <div class="b">In the middle of every difficulty lies opportunity.</div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- S5: traction slide -->
+      <div id="s5" class="clip dark" data-start="16.6" data-duration="2.9" data-track-index="0">
+        <div class="deck-year">TRACTION</div>
+        <div class="deck-page">SERIES A · CONFIDENTIAL</div>
+        <div class="deck-rule"></div>
+        <div class="table">
+          <div id="t1" class="trow"><span>Quotes per day</span><span class="v">1</span></div>
+          <div id="t2" class="trow"><span>Free tier</span><span class="v">20 quotes</span></div>
+          <div id="t3" class="trow hot"><span>Proprietary algorithm</span><span class="v">list.random()</span></div>
+        </div>
+      </div>
+
+      <!-- S6: outro -->
+      <div id="s6" class="clip cream" data-start="19.5" data-duration="5.5" data-track-index="0">
+        <div class="center-col">
+          <img id="o-logo" class="outro-logo" src="assets/img/ic_logo.png" alt="" />
+          <div id="o-word" class="wordmark serif" style="margin-top:20px">QuoteDay</div>
+          <div id="o-tag" class="tag serif">your daily words</div>
+          <div id="o-fine" class="fine">Ten years in stealth.</div>
+          <div id="o-play" class="play">Now on Google Play</div>
+        </div>
+      </div>
+
+      <!-- audio -->
+      <audio id="music" data-start="0" data-duration="25" data-track-index="10" data-volume="0.14" src="assets/music/happy-beats-business-moves-vol-11-by-ende-dot-app.mp3"></audio>
+      <audio id="vo1" data-start="0.1" data-duration="4.63" data-track-index="3" data-volume="1" src="assets/vo/s1.wav"></audio>
+      <audio id="vo2" data-start="5.0" data-duration="4.67" data-track-index="3" data-volume="1" src="assets/vo/s2.wav"></audio>
+      <audio id="vo3" data-start="9.9" data-duration="1.96" data-track-index="3" data-volume="1" src="assets/vo/s3.wav"></audio>
+      <audio id="vo4" data-start="13.5" data-duration="2.05" data-track-index="3" data-volume="1" src="assets/vo/s4.wav"></audio>
+      <audio id="vo5" data-start="16.7" data-duration="2.45" data-track-index="3" data-volume="1" src="assets/vo/s5.wav"></audio>
+      <audio id="vo6" data-start="19.6" data-duration="4.91" data-track-index="3" data-volume="1" src="assets/vo/s6.wav"></audio>
+      <audio id="fx-stamp" data-start="8.94" data-duration="0.5" data-track-index="11" data-volume="0.7" src="assets/sfx/impactSoft_medium_001.ogg"></audio>
+      <audio id="fx-k1" data-start="10.15" data-duration="0.3" data-track-index="12" data-volume="0.4" src="assets/sfx/keypress-003.wav"></audio>
+      <audio id="fx-k2" data-start="10.45" data-duration="0.3" data-track-index="13" data-volume="0.4" src="assets/sfx/keypress-007.wav"></audio>
+      <audio id="fx-k3" data-start="10.75" data-duration="0.3" data-track-index="12" data-volume="0.4" src="assets/sfx/keypress-009.wav"></audio>
+      <audio id="fx-k4" data-start="11.3" data-duration="0.3" data-track-index="13" data-volume="0.4" src="assets/sfx/keypress-003.wav"></audio>
+      <audio id="fx-k5" data-start="11.65" data-duration="0.3" data-track-index="12" data-volume="0.4" src="assets/sfx/keypress-007.wav"></audio>
+      <audio id="fx-click" data-start="12.2" data-duration="0.4" data-track-index="14" data-volume="0.65" src="assets/sfx/click3.ogg"></audio>
+      <audio id="fx-drop" data-start="12.62" data-duration="0.6" data-track-index="15" data-volume="0.65" src="assets/sfx/drop_001.ogg"></audio>
+      <audio id="fx-notif" data-start="13.62" data-duration="0.8" data-track-index="16" data-volume="0.55" src="assets/sfx/impactPlate_light_001.ogg"></audio>
+      <audio id="fx-bell" data-start="22.65" data-duration="2.3" data-track-index="17" data-volume="0.6" src="assets/sfx/impactBell_heavy_000.ogg"></audio>
     </div>
+
     <script>
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.fromTo("#title", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6 }, 0);
+      const E = "power3.out";
+
+      // ---- S1: hook ----
+      tl.from(".deck-year, .deck-page, .deck-rule", { opacity: 0, duration: 0.4 }, 0.05);
+      tl.from("#s1-h", { opacity: 0, y: 40, duration: 0.5, ease: E }, 0.3);
+      gsap.set("#row-words", { opacity: 0 });
+      // beat-grid: rows at 2.65 / 3.18(+0.27 for reading) / 4.23
+      [["#row-1", 2.65], ["#row-2", 3.45], ["#row-3", 4.23]].forEach(([s, t]) =>
+        tl.from(s, { opacity: 0, x: -60, duration: 0.3, ease: E }, t));
+
+      // ---- S2: the gap ----
+      tl.to("#row-1, #row-2, #row-3", { opacity: 0.3, duration: 0.4 }, 5.2);
+      tl.to("#s1-h", { opacity: 0.3, duration: 0.4 }, 5.2);
+      tl.fromTo("#row-words", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.35, ease: E }, 6.86); // beat-grid 6.86
+      tl.to("#row-words", { scale: 1.25, transformOrigin: "left center", duration: 0.6, ease: E }, 7.1);
+      tl.from("#s2-logo", { opacity: 0, y: 30, duration: 0.3, ease: E }, 7.91);
+      tl.from("#s2-word", { opacity: 0, y: 30, duration: 0.3, ease: E }, 8.05);
+      tl.fromTo("#stamp", { opacity: 0, scale: 2.4 }, { opacity: 1, scale: 1, duration: 0.18, ease: "power4.in" }, 8.78); // beat-locked: 8.96
+
+      // ---- S3: capture ----
+      gsap.set("#cap-b, #scr-today", { opacity: 0 });
+      tl.from("#cap-a", { opacity: 0, x: -50, duration: 0.4, ease: E }, 9.8);
+      tl.from(".phone", { y: 80, duration: 0.5, ease: E }, 9.8);
+      gsap.set("#card-new", { opacity: 0, y: -40 });
+      const typeInto = (id, text, start, step) => {
+        const el = document.getElementById(id);
+        [...text].forEach((ch, i) => {
+          const s = document.createElement("span");
+          s.textContent = ch;
+          s.style.opacity = 0;
+          el.appendChild(s);
+          tl.set(s, { opacity: 1 }, start + i * step);
+        });
+      };
+      typeInto("v-quote", "All is well", 10.1, 0.075);
+      tl.set("#f-quote", { className: "field big" }, 11.05);
+      tl.set("#f-author", { className: "field focus" }, 11.05);
+      typeInto("v-author", "Three Idiots", 11.15, 0.055);
+      tl.fromTo("#tap", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1.2, duration: 0.25 }, 12.2);
+      tl.to("#btn-add", { scale: 0.92, duration: 0.1, yoyo: true, repeat: 1 }, 12.2);
+      tl.to("#dlg", { opacity: 0, duration: 0.25 }, 12.4);
+      tl.to("#card-old", { y: 128, duration: 0.35, ease: E }, 12.55);
+      tl.to("#card-new", { opacity: 1, y: 0, duration: 0.35, ease: E }, 12.62); // beat-grid 12.65
+      tl.set("#count", { textContent: "Lite 3/20" }, 12.65);
+
+      // ---- S4: delivery ----
+      tl.set("#cap-a, #scr-quotes", { opacity: 0 }, 13.4);
+      tl.set("#cap-b, #scr-today", { opacity: 1 }, 13.4);
+      tl.from("#cap-b", { x: -50, duration: 0.4, ease: E }, 13.4);
+      gsap.set("#today-q, #today-a", { opacity: 0 });
+      tl.fromTo("#notif", { y: -180 }, { y: 0, duration: 0.4, ease: E }, 13.6);
+      tl.to("#notif", { y: -200, duration: 0.35, ease: "power2.in" }, 14.8);
+      tl.to("#today-q, #today-a", { opacity: 1, duration: 0.4, stagger: 0.15 }, 15.0);
+
+      // ---- S5: traction ----
+      tl.from("#t1", { opacity: 0, y: 30, duration: 0.3, ease: E }, 16.75);
+      tl.from("#t2", { opacity: 0, y: 30, duration: 0.3, ease: E }, 17.3);
+      tl.from("#t3", { opacity: 0, y: 30, duration: 0.3, ease: E }, 17.91); // beat-locked: 17.91
+
+      // ---- S6: outro ----
+      tl.from("#o-logo", { opacity: 0, scale: 0.8, duration: 0.45, ease: E }, 19.55);
+      tl.from("#o-word", { opacity: 0, y: 30, duration: 0.4, ease: E }, 19.75);
+      tl.from("#o-tag", { opacity: 0, y: 20, duration: 0.4, ease: E }, 20.4);
+      tl.from("#o-fine", { opacity: 0, y: 20, duration: 0.4, ease: E }, 21.5);
+      tl.from("#o-play", { opacity: 0, y: 20, duration: 0.35, ease: E }, 22.6); // beat-locked: 22.65
+      tl.to("#music", { volume: 0, duration: 0.8 }, 24.2);
+
+      window.__timelines = window.__timelines || {};
       window.__timelines["main"] = tl;
       tl.seek(0);
     </script>
