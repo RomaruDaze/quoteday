@@ -1,0 +1,1 @@
+In 2016 every problem got an app. We found the last one left: words. QuoteDay sends you one of your own saved quotes every morning, powered by a proprietary algorithm (list.random()).
